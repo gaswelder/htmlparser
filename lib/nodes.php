@@ -43,7 +43,7 @@ class html_node extends html_node_proto
 		if (!$this->firstChild) {
 			$this->firstChild = $node;
 		}
-		if($node->nodeType == $node::ELEMENT_NODE) {
+		if ($node->nodeType == $node::ELEMENT_NODE) {
 			$this->children[] = $node;
 		}
 	}
@@ -103,6 +103,11 @@ class html_node extends html_node_proto
 		return null;
 	}
 
+	function querySelectorAll($sel)
+	{
+		return select(array($this), $sel);
+	}
+
 	function __toString()
 	{
 		return get_class($this);
@@ -133,7 +138,7 @@ class html_element extends html_node
 
 	function setAttribute($k, $v)
 	{
-		if($k == 'class') {
+		if ($k == 'class') {
 			$this->classList = preg_split('/[ ]+/', $v);
 		}
 		$this->attrs[$k] = $v;

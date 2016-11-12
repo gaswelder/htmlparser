@@ -5,6 +5,8 @@ require $dir.'/htmlstream.php';
 require $dir.'/parser.php';
 require $dir.'/nodes.php';
 require $dir.'/token.php';
+require $dir.'/css_parse.php';
+require $dir.'/css_select.php';
 
 /*
  * Parses the given HTML file.
