@@ -73,6 +73,19 @@ class html_node extends html_node_proto
 		}
 		return new html_collection( $list );
 	}
+	
+	function getElementById($id)
+	{
+		foreach($this->childNodes as $ch) {
+			if($ch->nodeType != $ch::ELEMENT_NODE) continue;
+			if($ch->getAttribute('id') == $id) {
+				return $ch;
+			}
+			$ch = $ch->getElementById($id);
+			if($ch) return $ch;
+		}
+		return null;
+	}
 
 	function __toString() {
 		return get_class( $this );
