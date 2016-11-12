@@ -60,6 +60,10 @@ class html_parser
 		$this->doc = new html_doc();
 
 		$t = $this->tok();
+		if (!$t) {
+			return $this->error($this->s->err());
+		}
+
 		if ($t->type == 'doctype') {
 			$this->doc->type = $t->content;
 		}
@@ -316,7 +320,9 @@ class html_parser
 
 	function err()
 	{
-		return $this->error;
+		$err = $this->s->err();
+		if (!$err) $err = $this->error;
+		return $err;
 	}
 
 	private function error($msg, $pos = null)
