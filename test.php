@@ -1,7 +1,9 @@
 <?php
 require 'lib/_.php';
 
-$doc = parse_html_file('test/157.html');
-var_dump($doc);
+$path = $argv[1];
+
+$doc = parse_html_file($path);
+echo $doc ? "OK" : "FAIL", PHP_EOL;
 
 ?>
