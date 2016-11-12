@@ -17,7 +17,7 @@ class parsebuf
 
 	function __construct($str, $pos = null)
 	{
-		if($pos) {
+		if ($pos) {
 			list($this->line, $this->col) = explode(':', $pos);
 		}
 		$this->str = $str;
