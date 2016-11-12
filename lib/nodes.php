@@ -123,6 +123,7 @@ class html_element extends html_node
 {
 	public $tagName;
 	public $attrs = array();
+	public $classList = array();
 
 	function __construct($name)
 	{
@@ -132,6 +133,9 @@ class html_element extends html_node
 
 	function setAttribute($k, $v)
 	{
+		if($k == 'class') {
+			$this->classList = preg_split('/[ ]+/', $v);
+		}
 		$this->attrs[$k] = $v;
 	}
 
