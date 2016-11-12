@@ -125,18 +125,21 @@ class htmlstream
 
 	private function read_doctype()
 	{
-		$this->buf->skip_literal("<!DOCTYPE");
+		$b = $this->buf;
 
-		if (!$this->buf->read_set(self::spaces)) {
+		$b->skip_literal("<!DOCTYPE");
+
+		if (!$b->read_set(self::spaces)) {
 			return $this->error("Missing space after <!DOCTYPE");
 		}
 
-		if (!$this->buf->skip_literal("html")) {
-			return $this->error("Unknown doctype");
+		$type = $b->skip_until('>');
+		if ($type != "html") {
+			return $this->error("Unknown doctype: $type");
 		}
 
-		$this->buf->read_set(self::spaces);
-		if ($this->buf->get() != '>') {
+		$b->read_set(self::spaces);
+		if ($b->get() != '>') {
 			return $this->error("Missing '>'");
 		}
 
