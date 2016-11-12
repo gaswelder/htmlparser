@@ -1,12 +1,32 @@
 <?php
 
-class html_node
+class html_node_proto
 {
 	const ELEMENT_NODE = 1;
 	const TEXT_NODE = 3;
+	const COMMENT_NODE = 8;
 
 	public $nodeType;
+}
 
+class html_comment extends html_node_proto
+{
+	function __construct( $text ) {
+		$this->nodeType = self::COMMENT_NODE;
+	}
+}
+
+class html_text extends html_node_proto
+{
+	public $textContent;
+	function __construct( $text ) {
+		$this->textContent = $text;
+		$this->nodeType = self::TEXT_NODE;
+	}
+}
+
+class html_node extends html_node_proto
+{
 	public $parentNode = null;
 	public $childNodes = array();
 	public $firstChild = null;
@@ -41,6 +61,17 @@ class html_node
 			}
 		}
 		$this->parentNode = null;
+	}
+	
+	function getElementsByTagName( $name )
+	{
+		$list = array();
+		foreach( $this->childNodes as $ch ) {
+			if( $ch->tagName == $name ) {
+				$list[] = $ch;
+			}
+		}
+		return new html_collection( $list );
 	}
 
 	function __toString() {
@@ -78,17 +109,6 @@ class html_element extends html_node
 		return null;
 	}
 
-	function getElementsByTagName( $name )
-	{
-		$list = array();
-		foreach( $this->children as $ch ) {
-			if( $ch->tagName == $name ) {
-				$list[] = $ch;
-			}
-		}
-		return new html_collection( $list );
-	}
-
 	private static $singles = array(
 		'hr', 'img', 'br', 'meta', 'link', 'input'
 	);
@@ -99,22 +119,6 @@ class html_element extends html_node
 
 	function __toString() {
 		return "html_element($this->tagName)";
-	}
-}
-
-class html_text extends html_node
-{
-	public $textContent;
-	function __construct( $text ) {
-		$this->textContent = $text;
-		$this->nodeType = self::TEXT_NODE;
-	}
-}
-
-class html_comment
-{
-	function __construct( $text ) {
-		//
 	}
 }
 
