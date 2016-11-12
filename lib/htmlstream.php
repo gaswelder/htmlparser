@@ -5,8 +5,15 @@
 class htmlstream
 {
 	const spaces = "\r\n\t ";
+
+	/*
+	 * A parsebuf instance
+	 */
 	private $buf;
 
+	/*
+	 * Cache for next token, for unget
+	 */
 	private $peek = null;
 
 	function __construct($s)
@@ -14,19 +21,39 @@ class htmlstream
 		$this->buf = new parsebuf($s);
 	}
 
+	/*
+	 * Returns string describing current
+	 * line and column position in the buffer
+	 */
 	function pos()
 	{
 		return $this->buf->pos();
 	}
 
+	/*
+	 * Returns true if there are more tokens
+	 * in the stream
+	 */
 	function more()
 	{
 		return $this->peek() !== null;
 	}
 
 	/*
-	 * Returns next token or null
-	 * and removes it from the stream
+	 * Returns next token without removing it from the stream.
+	 * Returns null if there are no more tokens.
+	 */
+	function peek()
+	{
+		if ($this->peek === null) {
+			$this->peek = $this->read();
+		}
+		return $this->peek;
+	}
+
+	/*
+	 * Returns next token and removes it from the stream.
+	 * Returns null if there are no more tokens.
 	 */
 	function get()
 	{
@@ -38,6 +65,9 @@ class htmlstream
 		return $this->read();
 	}
 
+	/*
+	 * Pushes a token back into the stream
+	 */
 	function unget(token $tok)
 	{
 		if ($this->peek !== null) {
@@ -49,18 +79,7 @@ class htmlstream
 	}
 
 	/*
-	 * Returns next token or null
-	 */
-	function peek()
-	{
-		if ($this->peek === null) {
-			$this->peek = $this->read();
-		}
-		return $this->peek;
-	}
-
-	/*
-	 * Reads a token from the string
+	 * Reads a token from the buffer
 	 */
 	private function read()
 	{
