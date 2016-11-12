@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Запросы для клиента</title>
+<style>
+body {
+	font-size: 11pt;
+	font-family: sans-serif;
+	line-height: 1.5em;
+	width: 36em;
+	margin: auto;
+}
+
+h1 {
+	font-size: 11pt;
+}
+
+article {
+	margin-bottom: 3em;
+}
+
+article article h1 {
+	font-size: 10pt;
+}
+
+article section h1 {
+	font-size: 10pt;
+}
+
+table {
+	min-width: 50%;
+	margin: 1em;
+}
+
+table td {
+	border-bottom: thin solid gray;
+	padding: 0.3em 0.5em;
+}
+table {
+	border-top: thin solid gray;
+	border-spacing: 0;
+	margin-bottom: 2em;
+}
+
+table caption {
+	font-size: 10pt;
+	font-weight: bold;
+}
+.tab {
+	display: inline-block;
+	margin-left: 2em;
+}
+
+p code {
+	display: block;
+	margin: 1em;
+}
+
+dt {
+	font-weight: bolder;
+	font-size: 90%;
+}
+dt:after {
+	content: ":";
+}
+
+
+dd {
+	margin-left: 2em;
+	margin-bottom: 1em;
+}
+</style>
+</head>
+<body>
+	
+<article>
+	<h1>Формат запросов</h1>
+
+	<p>Все запросы делаются через протокол HTTP по адресам, описанным ниже. Часть &lt;pref&gt; в каждом адресе должна быть заменена на настоящий префикс. Например, если &lt;pref&gt;="/foo/bar", то
+		<code>GET &lt;pref&gt;/index.html</code>
+	становится
+		<code>GET /foo/bar/index.html</code>.</p>
+</article>
+
+<article>
+	<h1>Формат ответов</h1>
+
+	<p>Все описанные здесь запросы приводят к ответу в формате JSON. Любой ответ содержит поля "errno" и "errstr", позволяющие проверить отсутствие ошибок.</p>
+	<p><code>{<br>
+		<span class="tab"></span>"errno": &lt;errno&gt;,<br>
+		<span class="tab"></span>"errstr": &lt;errstr&gt;,<br>
+		<span class="tab"></span>&lt;другие поля...&gt;<br>
+	}</code></p>
+
+	<p>Для каждого успешного запроса значение &lt;errno&gt; будет равно нулю (0), а значение &lt;errstr&gt; &mdash; "ok". В случае ошибки &lt;errno&gt; будет иметь положительное значение, а &lt;errstr&gt; будет содержать сообщение об ошибке.</p>
+</article>
+
+<article>
+	<h1>Работа</h1>
+	
+	<p>Суть работы сводится к циклу:
+	
+	<ul>
+		<li>Регистрация (только при первом запуске)<br>
+			<code>POST registration</code></li>
+		<li>Открытие сессии перед началом работы<br>
+			<code>GET init</code></li>
+		<li>Отправка заказа:<br>
+			<code>POST order</code></li>
+		<li>Отслеживание состояния заказа:<br>
+			<code>GET order-status<br>
+				GET order-status<br>
+				...</code></li>
+	</ul>
+	</p>
+	
+	<p>При наличии текущего заказа его можно отменить запросом cancel-order.</p>
+	
+</article>
+
+<article id="registration">
+	<h1>Registration</h1>
+	
+	<p>Каждый клиент проходит одноразовую регистрацию на сервере и получает уникальный идентификатор. Этот идентификатор следует сохранить и использовать в будущем.</p>
+	
+	<p><code>POST &lt;pref&gt;/registration</code></p>
+	
+	<section>
+		<h1>Post-данные</h1>
+		<dl>
+			<dt>uuid</dt>
+				<dd>Идентификатор копии приложения или устройства.</dd>
+			<dt>version</dt>
+				<dd>Версия клиента в форме &laquo;&lt;имя&gt; &lt;число&gt;&raquo;. Например, &laquo;jscore 5&raquo;</dd>
+			<dt>host</dt>
+				<dd>"Платформа", на которой работает клиент. Если это веб-клиент, то имя сервера (например, "ontax.by"); если это приложение, то краткое описание операционной системы (например, "Android 4.4").</dd>
+			<dt>customer_name</dt>
+				<dd>Имя клиента</dd>
+			<dt>customer_phone</dt>
+				<dd>Номер телефона клиента в полном формате (например, "+375121234567").</dd>
+		</dl>
+	</section>
+	
+	<section>
+		<h1>Ответ</h1>
+		
+		<p><code>{<br>
+			<span class="tab">
+				user_id: &lt;идентификатор клиента&gt;<br>
+				errno: &lt;errno&gt;<br>
+				errstr: &lt;errstr&gt;</span><br>
+			}</code></p>
+	</section>
+</article>
+
+
+<article id="init">
+	<h1>Init</h1>
+
+	<p>Перед работой с заказами клиент должен открыть сеанс, послав запрос "init".</p>
+	
+	<dl>
+		<dt>Адрес</dt>
+		<dd><code>GET &lt;pref&gt;/init?user_id=&lt;user_id&gt;</code></dd>
+		
+		<dt>Ответ</dt>
+		<dd><code>{<br>
+			<span class="tab">
+				token: &lt;token&gt;<br>
+				errno: &lt;errno&gt;<br>
+				errstr: &lt;errstr&gt;</span><br>
+			}</code></dd>
+	</dl>
+	
+	<dl>
+		<dt>&lt;user_id&gt;</dt>
+		<dd>идентификатор клиента, полученный при регистрации.</dd>
+		
+		<dt>&lt;token&gt;</dt>
+		<dd>временный ключ для доступа к остальным запросам.</dd>
+	</dl>
+
+</article>
+
+
+
+<article>
+	<h1>Создание заказа</h1>
+	
+	<p><code>POST &lt;pref&gt;/order?t=&lt;token&gt;&order_id=&lt;order_id&gt;</code></p>
+
+	<p>&lt;order_id&gt; &mdash; UUID заказа, сгенерированный клиентом.</p>
+
+	<table>
+		<caption>Post-данные</caption>
+		<tr>
+			<td>address_place, address_street, address_house, address_building</td>
+			<td>Задают адрес заказа.</td>
+		</tr>
+		<tr>
+			<td>latitude, longitude</td>
+			<td>GPS-координаты заказа.</td>
+		</tr>
+		<tr>
+			<td>comments</td>
+			<td>Комментарии к заказу.</td>
+		</tr>
+	</table>
+
+	<p>Адрес и координаты дополняют друг друга. Для заказа требуется хотя бы одно из двух, но при возможности следует посылать и адрес, и координаты. Если послан только адрес, то координаты будут определены сервером.</p>
+
+	<p>Ответ: стандартный с полями "errno" и "errstr".</p>
+</article>
+
+<article id="cancel">
+	<h1>Отмена заказа</h1>
+
+	<p><code>POST &lt;pref&gt;/cancel-order?t=&lt;token&gt;&order_id=&lt;order_id&gt;</code></p>
+
+	<table>
+		<caption>Post-данные</caption>
+		<tr>
+			<td>reason</td>
+			<td>Причина отмены заказа.</td>
+		</tr>
+	</table>
+
+	<p>Причина отмены может быть текстом, введённым пользователем, либо строкой, указанной приложением.</p>
+
+	<p>Ответ: стандартный с полями "errno" и "errstr".</p>
+</article>
+
+<article>
+	<h1>Состояние заказа</h1>
+
+	<p>При наличии заказа его состояние можно проверить с помощью запроса: <code>GET &lt;pref&gt;/order-status?t=&lt;token&gt;&order_id=&lt;order_id&gt;</code></p>
+
+	<p>Формат ответа: <code>{<br>
+		<span class="tab"></span>errno: &lt;errno&gt;,<br>
+		<span class="tab"></span>errstr: &lt;errstr&gt;,<br>
+		<span class="tab"></span>status: &lt;order status&gt;<br>
+	}</code></p>
+
+	<table>
+		<caption>Состояния заказов</caption>
+		<tr>
+			<td>searching</td>
+			<td>Идёт поиск машин, нужно подождать.</td>
+		</tr><tr>
+			<td>no_cars</td>
+			<td>Не удалось найти машины, заказ закрыт.</td>
+		</tr><tr>
+			<td>found_cars</td>
+			<td>Машины найдены, идёт опрос водителей, нужно подождать.</td>
+		</tr><tr>
+			<td>assigned</td>
+			<td>Заказ принят водителем.</td>
+		</tr><tr>
+			<td>arrived</td>
+			<td>Машина прибыла к месту подачи, нужно сообщить пользователю.</td>
+		</tr><tr>
+			<td>started</td>
+			<td>Таксометр запущен, заказ начался.</td>
+		</tr><tr>
+			<td>finished</td>
+			<td>Таксометр остановлен, заказ завершён.</td>
+		</tr><tr>
+			<td>cancelled</td>
+			<td>Заказ отменён.</td>
+		</tr>
+	</table>
+</article>
+
+
+<article>
+	<h1>Положение машины</h1>
+
+	<p>Положение заказанной машины можно получить с помощью запроса:
+		<code>GET &lt;pref&gt;/car-position?t=&lt;token&gt;&order_id=&lt;order_id&gt;</code></p>
+
+	<p>Формат ответа: <code>{<br>
+		<span class="tab"></span>errno: &lt;errno&gt;,<br>
+		<span class="tab"></span>errstr: &lt;errstr&gt;,<br>
+		<span class="tab"></span>position: [lat, lon],<br>
+		<span class="tab"></span>distance: &lt;car distance&gt;<br>
+	}</code></p>
+
+	<p>&lt;car distance&gt; &mdash; расстояние от машины до места подачи в метрах.</p>
+
+	<p>Положение машины можно получить только для заказа, который принят, но ещё не начат.</p>
+</article>
+
+
+<article>
+	<h1>Список заказов</h1>
+
+	<p><code>GET &lt;pref&gt;/last-orders?t=&lt;token&gt;[&num=&lt;orders number&gt;]</code></p>
+
+	<p>Необязательный параметр "num" задаёт количество заказов. По умолчанию он принимается равным 1.</p>
+
+	<p>Формат ответа: <code>{<br>
+		<span class="tab">errno: &lt;errno&gt;,<br>
+		errstr: &lt;errstr&gt;,<br>
+		list: [<br>
+			<span class="tab">{<br>
+				<span class="tab">
+					uid: &lt;order uid&gt;,<br>
+					status: &lt;order status&gt;,<br>
+					address_place: &lt;place&gt;,<br>
+					address_street: &lt;street&gt;,<br>
+					address_house: &lt;house&gt;,<br>
+					address_building: &lt;building&gt;,<br>
+					address_entrance: &lt;entrance&gt;,<br>
+					comments: &lt;comments&gt;,<br>
+					car_name: &lt;car name&gt;,<br>
+					car_color: &lt;car color&gt;,<br>
+					car_plate: &lt;car plate&gt;,<br>
+					car_driver: &lt;car driver&gt;,<br>
+					service_id: &lt;service id&gt;,<br>
+					service_name: &lt;service name&gt;,<br>
+					time_created: &lt;time&gt;<br>
+				</span><br>
+			},<br>
+			...</span><br>
+		]</span><br>
+	}</code></p>
+
+	<p>Заказы упорядочиваются по времени их создания. Первый заказ в списке &mdash; самый поздний. Список возвращает все заказы без разделения на текущие и закрытые.</p>
+</article>
+
+
+<article>
+	<h1>Отправка отзыва</h1>
+
+	<p><code>POST &lt;pref&gt;/order-feedback?t=&lt;token&gt;&order_id=&lt;order_uid&gt;</code></p>
+
+	<table>
+		<caption>Post-данные</caption>
+		<tr>
+			<td>mark</td>
+			<td>Оценка, число от 0.0 до 1.0</td>
+		</tr>
+		<tr>
+			<td>comments</td>
+			<td>Комментарии к оценке</td>
+		</tr>
+	</table>
+
+	<p>Ответ: стандартный с полями "errno" и "errstr".</p>
+	
+	<p>К одному заказу можно оставить не более одного отзыва. Отзыв и оценку можно изменить, отправив запрос ещё раз.</p>
+</article>
+
+<article>
+	<h1>Получение отправленного отзыва</h1>
+	
+	<p>Получить отправленный ранее отзыв можно по тому же адресу, только вместо действия POST следует использовать GET:</p>
+	
+	<p><code>GET &lt;pref&gt;/order-feedback?t=&lt;token&gt;&order_id=&lt;order_id&gt;</code></p>
+	
+	<p>Ответ будет иметь формат:</p>
+	
+	<code>{<br>
+	<div class="tab">
+		timestamp: &lt;time&gt;,<br>
+		comments: &lt;text&gt;,<br>
+		mark: &lt;mark&gt;,<br>
+		errno: &lt;errno&gt;,<br>
+		errstr: &lt;errstr&gt;
+	</div><br>
+	}</code>
+
+</article>
+
+</body>
+</html>
+<!-- end -->
