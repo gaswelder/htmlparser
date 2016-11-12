@@ -30,6 +30,10 @@ class html_node extends html_node_proto
 {
 	public $parentNode = null;
 	public $childNodes = array();
+	/*
+	 * Subset of childNodes which only has element nodes
+	 */
+	public $children = array();
 	public $firstChild = null;
 
 	function appendChild($node)
@@ -39,22 +43,31 @@ class html_node extends html_node_proto
 		if (!$this->firstChild) {
 			$this->firstChild = $node;
 		}
+		if($node->nodeType == $node::ELEMENT_NODE) {
+			$this->children[] = $node;
+		}
 	}
 
 	function remove()
 	{
 		if (!$this->parentNode) return;
-		/*
-		 * Find the index at which this node is stored in the parent.
-		 */
+
 		$p = $this->parentNode;
-		foreach ($p->childNodes as $i => $node) {
-			if ($node === $this) {
-				break;
-			}
+
+		$pos = array_search($this, $p->childNodes, true);
+		/*
+		 * This element must be in the parent's childNodes
+		 * list, but not necessarily in the children list.
+		 */
+		assert($pos !== false);
+		array_splice($p->childNodes, $pos, 1);
+
+		$pos = array_search($this, $p->children, true);
+		if ($pos !== false) {
+			array_splice($p->children, $pos, 1);
 		}
-		array_splice($p->childNodes, $i, 1);
-		if ($i == 0) {
+
+		if ($p->firstChild == $this) {
 			if (!empty($p->childNodes)) {
 				$p->firstChild = $p->childNodes[0];
 			}
@@ -62,6 +75,7 @@ class html_node extends html_node_proto
 				$p->firstChild = null;
 			}
 		}
+
 		$this->parentNode = null;
 	}
 
