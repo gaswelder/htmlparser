@@ -16,9 +16,22 @@ class htmlstream
 	 */
 	private $peek = null;
 
+	/*
+	 * First occurred error message
+	 */
+	private $err;
+
 	function __construct($s)
 	{
 		$this->buf = new parsebuf($s);
+	}
+
+	/*
+	 * Returns first occurred error message
+	 */
+	function err()
+	{
+		return $this->err;
 	}
 
 	/*
@@ -36,6 +49,7 @@ class htmlstream
 	 */
 	function more()
 	{
+		if ($this->err) return false;
 		return $this->peek() !== null;
 	}
 
@@ -45,6 +59,7 @@ class htmlstream
 	 */
 	function peek()
 	{
+		if ($this->err) return null;
 		if ($this->peek === null) {
 			$this->peek = $this->read();
 		}
@@ -57,6 +72,7 @@ class htmlstream
 	 */
 	function get()
 	{
+		if ($this->err) return false;
 		if ($this->peek !== null) {
 			$p = $this->peek;
 			$this->peek = null;
@@ -70,11 +86,11 @@ class htmlstream
 	 */
 	function unget(token $tok)
 	{
+		if ($this->err) return;
 		if ($this->peek !== null) {
 			trigger_error("Can't unget $tok: buffer full");
 			return;
 		}
-
 		$this->peek = $tok;
 	}
 
@@ -102,6 +118,7 @@ class htmlstream
 			$t = $this->read_text();
 		}
 
+		if (!$t) return null;
 		$t->pos = $pos;
 		return $t;
 	}
@@ -186,6 +203,15 @@ class htmlstream
 		$s .= $this->buf->get();
 
 		return html_entity_decode($s);
+	}
+
+	/*
+	 * Set error and return null.
+	 */
+	private function error($msg)
+	{
+		if (!$this->err) $this->err = $msg;
+		return null;
 	}
 }
 
