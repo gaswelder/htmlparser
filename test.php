@@ -1,9 +1,10 @@
 <?php
 require 'lib/_.php';
 
-$path = $argv[1];
-
-$doc = parse_html_file($path);
-echo $doc ? "OK" : "FAIL", PHP_EOL;
+$paths = glob('test/*.html');
+foreach ($paths as $path) {
+	$doc = htmlp\parse_html_file($path);
+	echo $doc ? "OK" : "FAIL", PHP_EOL;
+}
 
 ?>
