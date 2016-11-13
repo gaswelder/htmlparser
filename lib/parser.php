@@ -13,7 +13,8 @@ class html_parser
 		'br',
 		'meta',
 		'link',
-		'input'
+		'input',
+		'base'
 	);
 
 	/*
