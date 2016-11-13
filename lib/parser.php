@@ -309,10 +309,10 @@ class html_parser
 			return $s->read_set(self::alpha);
 		}
 
-		if ($this->optionsopt['single_quotes'] && $s->peek() == "'") {
+		if ($this->options['single_quotes'] && $s->peek() == "'") {
 			$s->get();
 			$val = $s->skip_until("'");
-			if (!$s->pop("'")) {
+			if ($s->get() != "'") {
 				return $this->error("''' expected", $s->pos());
 			}
 			return $val;
