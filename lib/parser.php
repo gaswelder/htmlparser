@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 class html_parser
 {
 	const alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

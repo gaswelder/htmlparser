@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 class html_node_proto
 {
 	const ELEMENT_NODE = 1;
@@ -172,7 +174,7 @@ class html_element extends html_node
 	}
 }
 
-class html_collection implements ArrayAccess
+class html_collection implements \ArrayAccess
 {
 	public $length;
 	private $items = array();

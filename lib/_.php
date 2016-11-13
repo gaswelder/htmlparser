@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 $dir = dirname(__FILE__);
 require $dir.'/parsebuf.php';
 require $dir.'/htmlstream.php';

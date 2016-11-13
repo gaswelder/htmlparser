@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 class token
 {
 	public $type;

@@ -1,4 +1,5 @@
 <?php
+namespace htmlp;
 
 // spec: foo.bar#id:first-child
 // tagname: foo

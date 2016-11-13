@@ -1,7 +1,7 @@
 <?php
 require "lib/_.php";
 
-$doc = parse_html_file("test/157.html");
+$doc = htmlp\parse_html_file("test/157.html");
 if (!$doc) {
 	exit(1);
 }

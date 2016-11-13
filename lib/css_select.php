@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 function select($set, $selector)
 {
 	$query = parse_selector($selector);

@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 /*
  * A string buffer with functions for parsing
  */

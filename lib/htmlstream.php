@@ -1,4 +1,6 @@
 <?php
+namespace htmlp;
+
 /*
  * First stage parser for HTML documents.
  */
