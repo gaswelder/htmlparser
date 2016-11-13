@@ -13,10 +13,10 @@ require $dir.'/css_select.php';
 /*
  * Parses the given HTML file.
  */
-function parse_html_file($path)
+function parse_html_file($path, $opt = array())
 {
 	$s = file_get_contents($path);
-	$p = new html_parser();
+	$p = new html_parser($opt);
 	$doc = $p->parse($s);
 	if ($err = $p->err()) {
 		fwrite(STDERR, "$path: $err\n");
