@@ -113,7 +113,7 @@ class html_node extends html_node_proto
 	function querySelector($sel)
 	{
 		$s = $this->querySelectorAll($sel);
-		if(!empty($s)) return $s[0];
+		if (!empty($s)) return $s[0];
 		return null;
 	}
 
