@@ -110,6 +110,13 @@ class html_node extends html_node_proto
 		return select(array($this), $sel);
 	}
 
+	function querySelector($sel)
+	{
+		$s = $this->querySelectorAll($sel);
+		if(!empty($s)) return $s[0];
+		return null;
+	}
+
 	function __toString()
 	{
 		return get_class($this);
