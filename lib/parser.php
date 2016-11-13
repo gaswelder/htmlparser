@@ -269,7 +269,7 @@ class html_parser
 		/*
 		 * Read attribute name.
 		 */
-		$name = $s->read_set(self::alpha);
+		$name = $s->read_set(self::alpha.'-_0123456789');
 		if (!$name) {
 			return array(null, null);
 		}
