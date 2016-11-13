@@ -22,8 +22,8 @@ class html_parser
 	 */
 	private $options;
 	private static $def = array(
-		'xml_perversion' => false,
-		'single_quotes' => false,
+		'xml_perversion' => true,
+		'single_quotes' => true,
 		'missing_quotes' => false
 	);
 
