@@ -49,7 +49,7 @@ function select_subgroup($set, $spec)
 			$rel = $tok;
 			$tok = array_shift($spec);
 		}
-		assert(is_array($tok));
+		assert($tok instanceof element_selector);
 
 		/*
 		 * By default (rel=' ') we search the whole subtrees.
@@ -97,25 +97,20 @@ function search($tree, $rel, $spec)
 	return $match;
 }
 
-function match($child, $spec)
+function match($child, element_selector $spec)
 {
-	$v = $spec['tag'];
+	$v = $spec->tag;
 	if ($v && $child->tagName != $v) {
 		return false;
 	}
 
-	$v = $spec['class'];
+	$v = $spec->class;
 	if ($v && !in_array($v, $child->classList)) {
 		return false;
 	}
 
-	$v = $spec['id'];
+	$v = $spec->id;
 	if ($v && $child->getAttribute('id') != $v) {
-		return false;
-	}
-
-	if (!empty($spec['ext'])) {
-		trigger_error("Pseudoclasses not supported");
 		return false;
 	}
 

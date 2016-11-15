@@ -178,10 +178,14 @@ class parser
 		}
 
 		/*
+		 * Closing tag that we will expect
+		 */
+		$close = strtolower("</".$element->tagName.">");
+
+		/*
 		 * Process the tokens that will correspond to child nodes of
 		 * the current element.
 		 */
-		$close = strtolower("</".$element->tagName.">");
 		while ($tok = $this->tok()) {
 			/*
 			 * If this is our closing tag, put it back and exit the
