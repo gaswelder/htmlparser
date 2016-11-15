@@ -14,9 +14,9 @@ class tokstream
 	private $buf;
 
 	/*
-	 * Cache for next token, for unget
+	 * Cache for tokens that have already been read.
 	 */
-	private $peek = null;
+	private $peek = array();
 
 	/*
 	 * First occurred error message
@@ -62,10 +62,10 @@ class tokstream
 	function peek()
 	{
 		if ($this->err) return null;
-		if ($this->peek === null) {
-			$this->peek = $this->read();
+		if (!empty($this->peek)) {
+			return $this->peek[0];
 		}
-		return $this->peek;
+		return $this->read();
 	}
 
 	/*
@@ -75,10 +75,8 @@ class tokstream
 	function get()
 	{
 		if ($this->err) return false;
-		if ($this->peek !== null) {
-			$p = $this->peek;
-			$this->peek = null;
-			return $p;
+		if (!empty($this->peek)) {
+			return array_shift($this->peek);
 		}
 		return $this->read();
 	}
@@ -89,11 +87,7 @@ class tokstream
 	function unget(token $tok)
 	{
 		if ($this->err) return;
-		if ($this->peek !== null) {
-			trigger_error("Can't unget $tok: buffer full");
-			return;
-		}
-		$this->peek = $tok;
+		array_unshift($this->peek, $tok);
 	}
 
 	/*
@@ -115,6 +109,16 @@ class tokstream
 		}
 		else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
+			/*
+			 * If this tag starts a container for another language
+			 * (like JS or CSS), read the following contents without
+			 * parsing.
+			 */
+			$cdata = array('script', 'style');
+			preg_match('/<([a-zA-Z]+)[\s>]/', $t->content, $m);
+			if (isset($m[1]) && in_array(strtolower($m[1]), $cdata)) {
+				$this->read_cdata($m[1]);
+			}
 		}
 		else {
 			$t = $this->read_text();
@@ -123,6 +127,22 @@ class tokstream
 		if (!$t) return null;
 		$t->pos = $pos;
 		return $t;
+	}
+
+	private function read_cdata($name)
+	{
+		/*
+		 * Read everything until the closing tag
+		 */
+		$close = "</$name>";
+		$content = $this->buf->until_literal($close);
+		if (!$content) return;
+		/*
+		 * If the data is not empty, cache a 'text' token
+		 * in the peek buffer so that next call to 'get' will
+		 * return it.
+		 */
+		array_unshift($this->peek, new token('text', $content));
 	}
 
 	private function read_doctype()
