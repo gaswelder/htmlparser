@@ -9,13 +9,15 @@ class element_selector
 	public $tag = '';
 	public $class = '';
 	public $id = '';
+	public $attrs = array();
 
 	function is_empty()
 	{
 		$a = array(
 			$this->tag,
 			$this->class,
-			$this->id
+			$this->id,
+			$this->attrs
 		);
 		foreach ($a as $v) {
 			if (!empty($v)) return false;
@@ -79,6 +81,7 @@ function parse_set($s)
 		 * Read element specifier
 		 */
 		$spec = read_elem($buf);
+		if (!$spec) return null;
 		if ($spec->is_empty()) {
 			break;
 		}
@@ -98,6 +101,8 @@ function parse_set($s)
 /*
  * Reads an "element specifier".
  * <elem>: [<tagname>] ["." <classname>] ["#" <id>]
+ * 	[ "[" <attrname> ["=" <attvalue> ] "]" ]
+ * example: ul.funk[type="disc"]
  */
 function read_elem($buf)
 {
@@ -120,6 +125,34 @@ function read_elem($buf)
 	if ($s->peek() == '#') {
 		$s->get();
 		$spec->id = $s->read_set(IDCHARS);
+	}
+
+	while ($s->peek() == '[') {
+		$s->get();
+
+		$attr = $s->read_set(IDCHARS);
+		$val = null;
+
+		if ($s->peek() == '=') {
+			$s->get();
+			if ($s->get() != '"') {
+				trigger_error("double quotes expected around attribute value");
+				return null;
+			}
+
+			$val = $s->skip_until('"');
+			if ($s->get() != '"') {
+				trigger_error("missing closing double quote");
+				return null;
+			}
+		}
+
+		if ($s->get() != ']') {
+			trigger_error("']' expected");
+			return null;
+		}
+
+		$spec->attrs[$attr] = $val;
 	}
 
 	return $spec;

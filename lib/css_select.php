@@ -114,6 +114,22 @@ function match($child, element_selector $spec)
 		return false;
 	}
 
+	$v = $spec->attrs;
+	foreach ($v as $name => $val) {
+		$chval = $child->getAttribute($name);
+		/*
+		 * If the node doesn't have it, return false.
+		 */
+		if ($chval === null) return false;
+		/*
+		 * If the selector specifies a concrete value and
+		 * it doesn't match, return false.
+		 */
+		if ($val !== null && $val !== $chval) {
+			return false;
+		}
+	}
+
 	return true;
 }
 
