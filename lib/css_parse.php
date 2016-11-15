@@ -1,5 +1,5 @@
 <?php
-namespace htmlp;
+namespace gaswelder\htmlp;
 
 // spec: foo.bar#id:first-child
 // tagname: foo

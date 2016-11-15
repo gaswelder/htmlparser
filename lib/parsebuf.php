@@ -1,5 +1,5 @@
 <?php
-namespace htmlp;
+namespace gaswelder\htmlp;
 
 /*
  * A string buffer with functions for parsing

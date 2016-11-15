@@ -1,10 +1,10 @@
 <?php
-namespace htmlp;
+namespace gaswelder\htmlp;
 
 /*
  * First stage parser for HTML documents.
  */
-class htmlstream
+class tokstream
 {
 	const spaces = "\r\n\t ";
 

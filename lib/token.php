@@ -1,5 +1,5 @@
 <?php
-namespace htmlp;
+namespace gaswelder\htmlp;
 
 class token
 {

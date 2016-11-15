@@ -1,7 +1,15 @@
 <?php
-namespace htmlp;
+namespace gaswelder\htmlp;
 
-class html_parser
+$dir = dirname(__FILE__);
+require $dir.'/parsebuf.php';
+require $dir.'/htmlstream.php';
+require $dir.'/nodes.php';
+require $dir.'/token.php';
+require $dir.'/css_parse.php';
+require $dir.'/css_select.php';
+
+class parser
 {
 	const alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	const num = "0123456789";
@@ -59,7 +67,7 @@ class html_parser
 	function parse($s)
 	{
 		$this->error = null;
-		$this->s = new htmlstream($s);
+		$this->s = new tokstream($s);
 		$this->doc = new html_doc();
 
 		$t = $this->tok();
