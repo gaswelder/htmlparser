@@ -9,6 +9,8 @@ require $dir.'/token.php';
 require $dir.'/css_parse.php';
 require $dir.'/css_select.php';
 
+const UTF8_BOM = "\xEF\xBB\xBF";
+
 class parser
 {
 	const alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -66,6 +68,13 @@ class parser
 
 	function parse($s)
 	{
+		/*
+		 * Skip UTF-8 marker if it's present
+		 */
+		if (substr($s, 0, 3) == UTF8_BOM) {
+			$s = substr($s, 3);
+		}
+
 		$this->error = null;
 		$this->s = new tokstream($s);
 		$this->doc = new html_doc();
