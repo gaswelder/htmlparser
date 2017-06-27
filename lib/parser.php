@@ -153,7 +153,7 @@ class parser
 	 * container. Assumes that the next token will be a tag. If not,
 	 * returns null;
 	 */
-	private function parse_subtree()
+	private function parse_subtree($parent_element = null)
 	{
 		if ($this->error) return null;
 
@@ -166,8 +166,11 @@ class parser
 		 * This must be an opening tag.
 		 */
 		if (strpos($tok->content, '</') === 0) {
-			return $this->error("Unexpected closing tag ($tok->content)",
-				$this->s->pos());
+			$msg = "Unexpected closing tag ($tok->content)";
+			if($parent_element) {
+				$msg .= " (inside $parent_element->tagName)";
+			}
+			return $this->error($msg, $this->s->pos());
 		}
 
 		/*
@@ -215,7 +218,7 @@ class parser
 				break;
 			case 'tag':
 				$this->s->unget($tok);
-				$subtree = $this->parse_subtree();
+				$subtree = $this->parse_subtree($element);
 				if (!$subtree){
 					return $this->error("Subtree failed");
 				}
