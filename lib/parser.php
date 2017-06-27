@@ -56,7 +56,7 @@ class parser
 		 */
 		$k = array_diff(array_keys($options), array_keys(self::$def));
 		if (!empty($k)) {
-			trigger_error("Unknown options: ".implode(', ', $k));
+			throw new Exception("Unknown options: ".implode(', ', $k));
 		}
 		foreach (self::$def as $k => $v) {
 			if (!isset($options[$k])) {
@@ -345,22 +345,10 @@ class parser
 		return $this->error("Unexpected character: ".$s->peek(), $s->pos());
 	}
 
-	function err()
-	{
-		$err = $this->s->err();
-		if (!$err) $err = $this->error;
-		return $err;
-	}
-
 	private function error($msg, $pos = null)
 	{
 		if ($pos) $msg .= " at $pos";
-		//trigger_error($msg);
-		//exit;
-		if (!$this->error) {
-			$this->error = $msg;
-		}
-		return null;
+		throw new ParsingException($msg);
 	}
 }
 
