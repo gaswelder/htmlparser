@@ -1,5 +1,5 @@
 <?php
-namespace gaswelder\htmlp;
+namespace gaswelder\htmlparser;
 
 $dir = dirname(__FILE__);
 require $dir.'/parsebuf.php';

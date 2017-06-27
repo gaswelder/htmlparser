@@ -2,8 +2,6 @@
     "name": "gaswelder/htmlp",
     "description": "HTML parser and DOM implementation",
     "type": "library",
-    "license": "mit",
-    "require": {},
-    "autoload": {"psr-4": {"gaswelder\\htmlp\\": "lib/"}},
-    "version": "1.0"
+    "license": "MIT",
+    "autoload": {"psr-4": {"gaswelder\\htmlparser\\": "lib/"}}
 }

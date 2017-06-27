@@ -1,5 +1,5 @@
 <?php
-namespace gaswelder\htmlp;
+namespace gaswelder\htmlparser;
 
 const SPACES = " \t";
 const IDCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-_";

@@ -5,7 +5,7 @@ $opt = array(
 	'single_quotes' => true,
 	'xml_perversion' => true
 );
-$p = new \gaswelder\htmlp\parser($opt);
+$p = new \gaswelder\htmlparser\parser($opt);
 
 $paths = glob('test/*.html');
 foreach ($paths as $path) {

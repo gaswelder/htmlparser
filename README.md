@@ -7,7 +7,7 @@ bundled libxml and DOM.
 ## Usage
 
 ```php
-use \gaswelder\htmlp\parser;
+use \gaswelder\htmlparser\parser;
 
 $p = new parser();
 $doc = $p->parse($html);

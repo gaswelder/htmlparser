@@ -1,5 +1,5 @@
 <?php
-namespace gaswelder\htmlp;
+namespace gaswelder\htmlparser;
 
 function select($set, $selector)
 {
