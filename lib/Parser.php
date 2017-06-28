@@ -1,17 +1,14 @@
 <?php
 namespace gaswelder\htmlparser;
 
-$dir = dirname(__FILE__);
-require $dir.'/parsebuf.php';
-require $dir.'/htmlstream.php';
-require $dir.'/nodes.php';
-require $dir.'/token.php';
-require $dir.'/css_parse.php';
-require $dir.'/css_select.php';
+use gaswelder\htmlparser\dom\DocumentNode;
+use gaswelder\htmlparser\dom\CommentNode;
+use gaswelder\htmlparser\dom\TextNode;
+use gaswelder\htmlparser\dom\ElementNode;
 
 const UTF8_BOM = "\xEF\xBB\xBF";
 
-class parser
+class Parser
 {
 	const alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	const num = "0123456789";
@@ -40,7 +37,7 @@ class parser
 	private $error = null;
 
 	/*
-	 * html_doc object that we will return on success
+	 * DocumentNode object that we will return on success
 	 */
 	private $doc;
 
@@ -56,7 +53,7 @@ class parser
 		 */
 		$k = array_diff(array_keys($options), array_keys(self::$def));
 		if (!empty($k)) {
-			throw new Exception("Unknown options: ".implode(', ', $k));
+			throw new \Exception("Unknown options: ".implode(', ', $k));
 		}
 		foreach (self::$def as $k => $v) {
 			if (!isset($options[$k])) {
@@ -77,7 +74,7 @@ class parser
 
 		$this->error = null;
 		$this->s = new tokstream($s);
-		$this->doc = new html_doc();
+		$this->doc = new DocumentNode();
 
 		$t = $this->tok();
 		if (!$t) {
@@ -118,7 +115,7 @@ class parser
 			if (!$t) return null;
 
 			if ($t->type == 'comment') {
-				$this->doc->appendChild(new html_comment($t->content));
+				$this->doc->appendChild(new CommentNode($t->content));
 				continue;
 			}
 
@@ -214,7 +211,7 @@ class parser
 			 */
 			switch ($tok->type) {
 			case 'text':
-				$element->appendChild(new html_text($tok->content));
+				$element->appendChild(new TextNode($tok->content));
 				break;
 			case 'tag':
 				$this->s->unget($tok);
@@ -261,7 +258,7 @@ class parser
 		}
 		$name .= $s->read_set(self::alpha.self::num);
 
-		$element = new html_element($name);
+		$element = new ElementNode($name);
 
 		/*
 		 * Read attributes, one pair/flag at a time.

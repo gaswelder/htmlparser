@@ -1,18 +1,21 @@
 # HTML parser
 
 This is an HTML parser with a DOM implementation. It doesn't depend on
-bundled libxml and DOM.
+PHP's bundled libxml and DOM.
 
 
 ## Usage
 
 ```php
-use \gaswelder\htmlparser\parser;
+<?php
+use \gaswelder\htmlparser\Parser;
+use \gaswelder\htmlparser\ParsingException;
 
-$p = new parser();
-$doc = $p->parse($html);
-if($err = $p->err()) {
-	trigger_error($err);
+$p = new Parser();
+try {
+	$doc = $p->parse($html);
+} catch(ParsingException $e) {
+	// ...
 	return;
 }
 
@@ -29,6 +32,7 @@ As it was used for data mining, the DOM implementation has the
 `querySelectorAll` function, so the following can be done:
 
 ```php
+<?php
 $deps = $doc->querySelectorAll('a[rel="nofollow"]');
 foreach($deps as $node) {
 	$url = $node->getAttribute('href');
@@ -65,6 +69,6 @@ then, in the project, if not done already:
 Old-school dudes may download the library to whatever $libdir they have
 and do this:
 
-	require "$libdir/htmlp/init.php";
+	require "$libdir/htmlparser/init.php";
 
 After that the usage is the same for both types of dudes.

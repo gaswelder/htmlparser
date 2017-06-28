@@ -1,11 +1,14 @@
 <?php
-require 'lib/parser.php';
+require 'init.php';
+
+use gaswelder\htmlparser\Parser;
+use gaswelder\htmlparser\ParsingException;
 
 $opt = array(
 	'single_quotes' => true,
 	'xml_perversion' => true
 );
-$p = new \gaswelder\htmlparser\parser($opt);
+$p = new Parser($opt);
 
 $paths = glob('test/*.html');
 foreach ($paths as $path) {
@@ -15,9 +18,10 @@ foreach ($paths as $path) {
 
 function test($p, $path)
 {
-	$doc = $p->parse(file_get_contents($path));
-	if ($err = $p->err()) {
-		fwrite(STDERR, "$path: $err\n");
+	try {
+		$doc = $p->parse(file_get_contents($path));
+	} catch(ParsingException $e) {
+		fwrite(STDERR, $e->getMessage()."\n");
 		return false;
 	}
 
