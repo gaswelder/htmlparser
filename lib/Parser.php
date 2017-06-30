@@ -235,7 +235,9 @@ class Parser
 		 */
 		$s = new parsebuf($tok->content, $tok->pos);
 
-		assert($s->get() == '<');
+		if ($s->get() != '<') {
+			return $this->error("'<' expected", $tok->pos);
+		}
 
 		/*
 		 * Read the tag name.
