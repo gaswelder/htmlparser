@@ -50,10 +50,9 @@ pages out there. There are three options which are, sadly, often
 needed:
 
 * `xml_perversion` - XML syntax like `<br/>` instead of `<br>`;
-* `single_quotes` - single quotes around argument values
-  (`<a href='...'>`);
-* `missing_quotes` - missing quotes around argument values
-  (`<a class=foo>`).
+* `single_quotes` - single quotes around argument values (`<a href='...'>`);
+* `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
+* `missing_closing_tags` - cases where someone forgot to add `</div>`, for example.
 
 
 ## Installation

@@ -24,11 +24,12 @@ class Parser
 	 * Parsing options and their defaults
 	 */
 	private $options;
-	private static $def = array(
+	private static $def = [
 		'xml_perversion' => true,
 		'single_quotes' => true,
-		'missing_quotes' => false
-	);
+		'missing_quotes' => false,
+		'missing_closing_tags' => true,
+	];
 
 	/**
 	 * @var tokstream
@@ -100,7 +101,11 @@ class Parser
 					$this->parseTree($node);
 					$t = $s->get();
 					if (!$t || !$t->isClosingTag($node->tagName)) {
-						return $this->error("Expected closing tag for '$node->tagName', got $t", $t->pos);
+						if ($this->options['missing_closing_tags']) {
+							$s->unget($t);
+						} else {
+							return $this->error("Expected closing tag for '$node->tagName', got $t", $t->pos);
+						}
 					}
 				}
 			}
