@@ -74,12 +74,14 @@ class Parser
 		$this->doc = new DocumentNode();
 
 		$t = $this->tok();
-		if ($t->type == token::DOCTYPE) {
-			$this->doc->type = $t->content;
+		if (!$t) {
+			return $this->error("No data");
 		}
-		else {
+		if ($t->type != token::DOCTYPE) {
 			return $this->error("Missing doctype");
 		}
+
+		$this->doc->type = $t->content;
 
 		$tree = $this->parse_subtree();
 		if (!$tree) {
