@@ -34,8 +34,6 @@ class Parser
 		'missing_quotes' => false
 	);
 
-	private $error = null;
-
 	/*
 	 * DocumentNode object that we will return on success
 	 */
@@ -72,7 +70,6 @@ class Parser
 			$s = substr($s, 3);
 		}
 
-		$this->error = null;
 		$this->s = new tokstream($s);
 		$this->doc = new DocumentNode();
 
@@ -129,7 +126,6 @@ class Parser
 
 	private function skip_empty_text()
 	{
-		if ($this->error) return null;
 		while ($t = $this->s->peek()) {
 			if ($t->type == 'text' && ctype_space($t->content)) {
 				$this->s->get();
@@ -152,8 +148,6 @@ class Parser
 	 */
 	private function parse_subtree($parent_element = null)
 	{
-		if ($this->error) return null;
-
 		$tok = $this->tok();
 		if (!$tok || $tok->type != 'tag') {
 			return $this->error("No tag in the stream ($tok)", $this->s->pos());
@@ -239,8 +233,6 @@ class Parser
 	 */
 	private function parse_tag(token $tok)
 	{
-		if ($this->error) return null;
-
 		/*
 		 * This is a parser inside a parser, so we create another
 		 * stream to work with.
@@ -286,7 +278,6 @@ class Parser
 
 	private function tagattr(parsebuf $s)
 	{
-		if ($this->error) return null;
 		/*
 		 * Read attribute name.
 		 */
@@ -316,7 +307,6 @@ class Parser
 
 	private function tagval(parsebuf $s)
 	{
-		if ($this->error) return null;
 		if ($s->peek() == '"') {
 			$s->get();
 			$val = $s->skip_until('"');
