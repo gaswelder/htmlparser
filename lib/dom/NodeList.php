@@ -5,10 +5,11 @@ namespace gaswelder\htmlparser\dom;
 /**
  * Collection of DOM nodes.
  */
-class NodeList implements \ArrayAccess
+class NodeList implements \ArrayAccess, \Iterator
 {
 	public $length;
 	private $items = array();
+	private $cursor = 0;
 
 	function __construct($items)
 	{
@@ -42,5 +43,25 @@ class NodeList implements \ArrayAccess
 	function offsetUnset($i)
 	{
 		trigger_error("Can't mess with collections");
+	}
+
+	function current() {
+		return $this->items[$this->cursor];
+	}
+
+	function key() {
+		return $this->cursor;
+	}
+
+	function next() {
+		$this->cursor++;
+	}
+
+	function rewind() {
+		$this->cursor = 0;
+	}
+
+	function valid() {
+		return isset($this->items[$this->cursor]);
 	}
 }
