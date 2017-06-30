@@ -78,7 +78,7 @@ class Parser
 			return $this->error($this->s->err());
 		}
 
-		if ($t->type == 'doctype') {
+		if ($t->type == token::DOCTYPE) {
 			$this->doc->type = $t->content;
 		}
 		else {
@@ -111,12 +111,12 @@ class Parser
 			$t = $this->s->get();
 			if (!$t) return null;
 
-			if ($t->type == 'comment') {
+			if ($t->type == token::COMMENT) {
 				$this->doc->appendChild(new CommentNode($t->content));
 				continue;
 			}
 
-			if ($t->type == 'text' && ctype_space($t->content)) {
+			if ($t->type == token::TEXT && ctype_space($t->content)) {
 				continue;
 			}
 
@@ -127,12 +127,12 @@ class Parser
 	private function skip_empty_text()
 	{
 		while ($t = $this->s->peek()) {
-			if ($t->type == 'text' && ctype_space($t->content)) {
+			if ($t->type == token::TEXT && ctype_space($t->content)) {
 				$this->s->get();
 				continue;
 			}
 
-			if ($t->type == 'comment') {
+			if ($t->type == token::COMMENT) {
 				$this->s->get();
 				continue;
 			}
@@ -149,7 +149,7 @@ class Parser
 	private function parse_subtree($parent_element = null)
 	{
 		$tok = $this->tok();
-		if (!$tok || $tok->type != 'tag') {
+		if (!$tok || $tok->type != token::TAG) {
 			return $this->error("No tag in the stream ($tok)", $this->s->pos());
 		}
 
@@ -194,7 +194,7 @@ class Parser
 			 * If this is our closing tag, put it back and exit the
 			 * loop.
 			 */
-			if ($tok->type == 'tag' && strtolower($tok->content) == $close) {
+			if ($tok->type == token::TAG && strtolower($tok->content) == $close) {
 				$this->s->unget($tok);
 				break;
 			}
@@ -204,10 +204,10 @@ class Parser
 			 * a child to the tree.
 			 */
 			switch ($tok->type) {
-			case 'text':
+			case token::TEXT:
 				$element->appendChild(new TextNode($tok->content));
 				break;
-			case 'tag':
+			case token::TAG:
 				$this->s->unget($tok);
 				$subtree = $this->parse_subtree($element);
 				if (!$subtree){
@@ -221,7 +221,7 @@ class Parser
 		}
 
 		$tok = $this->s->peek();
-		if (!$tok || $tok->type != 'tag' || strtolower($tok->content) != $close) {
+		if (!$tok || $tok->type != token::TAG || strtolower($tok->content) != $close) {
 			return $this->error("$close expected", $this->s->pos());
 		}
 		$this->s->get();

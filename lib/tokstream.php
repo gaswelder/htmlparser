@@ -142,7 +142,7 @@ class tokstream
 		 * in the peek buffer so that next call to 'get' will
 		 * return it.
 		 */
-		array_unshift($this->peek, new token('text', $content));
+		array_unshift($this->peek, new token(token::TEXT, $content));
 	}
 
 	private function read_doctype()
@@ -165,7 +165,7 @@ class tokstream
 			return $this->error("Missing '>'");
 		}
 
-		return new token('doctype', 'html');
+		return new token(token::DOCTYPE, 'html');
 	}
 
 	private function read_comment()
@@ -175,7 +175,7 @@ class tokstream
 		while ($this->buf->more()) {
 			$ch = $this->buf->get();
 			if ($ch == '-' && $this->buf->skip_literal('->')) {
-				return new token('comment', $s);
+				return new token(token::COMMENT, $s);
 			}
 			$s .= $ch;
 		}
@@ -190,7 +190,7 @@ class tokstream
 			$ch = $this->buf->get();
 			$s .= $ch;
 			if ($ch == '>') {
-				return new token('tag', $s);
+				return new token(token::TAG, $s);
 			}
 		}
 		return $this->error("Missing '>'");
@@ -215,7 +215,7 @@ class tokstream
 			$s .= $ch;
 		}
 
-		return new token('text', $s);
+		return new token(token::TEXT, $s);
 	}
 
 	private function read_entity()

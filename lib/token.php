@@ -3,6 +3,14 @@ namespace gaswelder\htmlparser;
 
 class token
 {
+	/*
+	 * Possible token types
+	 */
+	const COMMENT = 'comment';
+	const DOCTYPE = 'doctype';
+	const TAG = 'tag';
+	const TEXT = 'text';
+
 	public $type;
 	public $content;
 	public $pos;
