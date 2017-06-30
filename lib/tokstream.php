@@ -18,22 +18,9 @@ class tokstream
 	 */
 	private $peek = array();
 
-	/*
-	 * First occurred error message
-	 */
-	private $err;
-
 	function __construct($s)
 	{
 		$this->buf = new parsebuf($s);
-	}
-
-	/*
-	 * Returns first occurred error message
-	 */
-	function err()
-	{
-		return $this->err;
 	}
 
 	/*
@@ -51,7 +38,6 @@ class tokstream
 	 */
 	function more()
 	{
-		if ($this->err) return false;
 		return $this->peek() !== null;
 	}
 
@@ -61,7 +47,6 @@ class tokstream
 	 */
 	function peek()
 	{
-		if ($this->err) return null;
 		if (!empty($this->peek)) {
 			return $this->peek[0];
 		}
@@ -74,7 +59,6 @@ class tokstream
 	 */
 	function get()
 	{
-		if ($this->err) return false;
 		if (!empty($this->peek)) {
 			return array_shift($this->peek);
 		}
@@ -86,7 +70,6 @@ class tokstream
 	 */
 	function unget(token $tok)
 	{
-		if ($this->err) return;
 		array_unshift($this->peek, $tok);
 	}
 
@@ -230,13 +213,15 @@ class tokstream
 		return html_entity_decode($s);
 	}
 
-	/*
-	 * Set error and return null.
+	/**
+	 * Reports an error and aborts.
+	 *
+	 * @param string $msg
+	 * @throws ParsingException
 	 */
 	private function error($msg)
 	{
-		if (!$this->err) $this->err = $msg;
-		return null;
+		throw new ParsingException($msg);
 	}
 }
 

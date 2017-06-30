@@ -74,10 +74,6 @@ class Parser
 		$this->doc = new DocumentNode();
 
 		$t = $this->tok();
-		if (!$t) {
-			return $this->error($this->s->err());
-		}
-
 		if ($t->type == token::DOCTYPE) {
 			$this->doc->type = $t->content;
 		}
