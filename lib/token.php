@@ -21,6 +21,25 @@ class token
 		$this->content = $content;
 	}
 
+	/**
+	 * Returns true if this token is a closing tag.
+	 *
+	 * @param string $name (optional) specifies the name of the tag
+	 * @return bool
+	 */
+	function isClosingTag($name = null)
+	{
+		if ($this->type != self::TAG) {
+			return false;
+		}
+
+		if ($name === null) {
+			return substr($this->content, 0, 2) == '</';
+		} else {
+			return strtolower($this->content) == strtolower("</$name>");
+		}
+	}
+
 	function __toString()
 	{
 		if ($this->content === null) {

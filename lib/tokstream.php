@@ -18,9 +18,12 @@ class tokstream
 	 */
 	private $peek = array();
 
-	function __construct($s)
+	/**
+	 * @param string $htmlSource
+	 */
+	function __construct($htmlSource)
 	{
-		$this->buf = new parsebuf($s);
+		$this->buf = new parsebuf($htmlSource);
 	}
 
 	/*
@@ -32,16 +35,17 @@ class tokstream
 		return $this->buf->pos();
 	}
 
-	/*
-	 * Returns true if there are more tokens
-	 * in the stream
+	/**
+	 * Returns true if there are more tokens in the stream.
+	 *
+	 * @return bool
 	 */
 	function more()
 	{
 		return $this->peek() !== null;
 	}
 
-	/*
+	/**
 	 * Returns next token without removing it from the stream.
 	 * Returns null if there are no more tokens.
 	 *
@@ -57,9 +61,11 @@ class tokstream
 		return $this->peek[0];
 	}
 
-	/*
+	/**
 	 * Returns next token and removes it from the stream.
 	 * Returns null if there are no more tokens.
+	 *
+	 * @return token|null
 	 */
 	function get()
 	{

@@ -10,5 +10,6 @@ class DocumentNode extends ContainerNode
 	{
 		parent::__construct();
 		$this->type = $type;
+		$this->nodeType = Node::DOCUMENT_NODE;
 	}
 }
