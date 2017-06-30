@@ -43,15 +43,23 @@ class tagparser
 		$name = $this->readName();
 		$element = new ElementNode($name);
 
-		/*
-		 * Read attributes, one pair/flag at a time.
-		 */
-		while (ctype_space($s->peek())) {
-			$s->read_set(self::spaces);
-			list($name, $val) = $this->tagattr($s);
-			if (!$name) {
-				break;
+		while(1) {
+			// Skip spaces
+			$this->spaces();
+
+			// Read attribute name. If no name, stop.
+			$name = $this->attrname();
+			if (!$name) break;
+
+			// If '=' follows, read the value.
+			// If not, treat the attribute as a boolean.
+			if ($this->s->peek() == '=') {
+				$this->s->get();
+				$val = $this->attrvalue();
+			} else {
+				$val = true;
 			}
+
 			$element->setAttribute($name, $val);
 		}
 
@@ -65,6 +73,11 @@ class tagparser
 		}
 
 		return $element;
+	}
+
+	private function spaces()
+	{
+		$this->s->read_set(self::spaces);
 	}
 
 	/**
@@ -86,37 +99,23 @@ class tagparser
 		return $name;
 	}
 
-	private function tagattr(parsebuf $s)
+	/**
+	 * Reads attribute name.
+	 */
+	private function attrname()
 	{
-		/*
-		 * Read attribute name.
-		 */
+		$s = $this->s;
 		$name = $s->read_set(self::alpha.'-_0123456789');
-		if (!$name) {
-			return array(null, null);
-		}
-
-		/*
-		 * If no '=' follows, this is a flag only.
-		 */
-		if ($s->peek() != '=') {
-			return array($name, true);
-		}
-		$s->get();
-
-		/*
-		 * Read the value.
-		 */
-		$val = $this->tagval($s);
-		if ($val === null) {
-			return array(null, null);
-		}
-
-		return array($name, $val);
+		return $name;
 	}
 
-	private function tagval(parsebuf $s)
+	/**
+	 * Reads attribute value.
+	 */
+	private function attrvalue()
 	{
+		$s = $this->s;
+
 		if ($s->peek() == '"') {
 			$s->get();
 			$val = $s->skip_until('"');
