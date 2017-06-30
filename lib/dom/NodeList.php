@@ -5,7 +5,7 @@ namespace gaswelder\htmlparser\dom;
 /**
  * Collection of DOM nodes.
  */
-class Collection implements \ArrayAccess
+class NodeList implements \ArrayAccess
 {
 	public $length;
 	private $items = array();
@@ -13,6 +13,7 @@ class Collection implements \ArrayAccess
 	function __construct($items)
 	{
 		$this->items = $items;
+		$this->length = count($items);
 	}
 
 	function item($i)

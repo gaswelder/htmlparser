@@ -76,7 +76,7 @@ abstract class ContainerNode extends Node
 				$list[] = $ch;
 			}
 		}
-		return new Collection($list);
+		return new NodeList($list);
 	}
 
 	function getElementById($id)
@@ -92,10 +92,14 @@ abstract class ContainerNode extends Node
 		return null;
 	}
 
-	function querySelectorAll($sel)
+	/**
+	 * @param string $selectorString
+	 * @return NodeList
+	 */
+	function querySelectorAll($selectorString)
 	{
-		$selector = $this->selectorsParser->parse($sel);
-		return $selector->select([$this]);
+		$selector = $this->selectorsParser->parse($selectorString);
+		return new NodeList($selector->select([$this]));
 	}
 
 	function querySelector($sel)
