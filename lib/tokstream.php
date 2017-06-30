@@ -44,13 +44,17 @@ class tokstream
 	/*
 	 * Returns next token without removing it from the stream.
 	 * Returns null if there are no more tokens.
+	 *
+	 * @return token|null
 	 */
 	function peek()
 	{
-		if (!empty($this->peek)) {
-			return $this->peek[0];
+		if (empty($this->peek)) {
+			$t = $this->read();
+			if (!$t) return null;
+			$this->peek[] = $t;
 		}
-		return $this->read();
+		return $this->peek[0];
 	}
 
 	/*
