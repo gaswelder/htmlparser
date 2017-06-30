@@ -33,21 +33,14 @@ class tagparser
 	 */
 	function parse(token $tok)
 	{
-		$s = new parsebuf($tok->content, $tok->pos);
+		$this->s = new parsebuf($tok->content, $tok->pos);
+		$s = $this->s;
 
 		if ($s->get() != '<') {
 			return $this->error("'<' expected", $tok->pos);
 		}
 
-		/*
-		 * Read the tag name.
-		 */
-		$name = $s->get();
-		if (!$name || strpos(self::alpha, $name) === false) {
-			return $this->error("Tag name expected", $s->pos());
-		}
-		$name .= $s->read_set(self::alpha.self::num);
-
+		$name = $this->readName();
 		$element = new ElementNode($name);
 
 		/*
@@ -72,6 +65,25 @@ class tagparser
 		}
 
 		return $element;
+	}
+
+	/**
+	 * Reads the tag's name.
+	 *
+	 * @return string
+	 * @throws ParsingException
+	 */
+	private function readName()
+	{
+		$s = $this->s;
+
+		$name = $s->get();
+		if (!$name || strpos(self::alpha, $name) === false) {
+			return $this->error("Tag name expected", $s->pos());
+		}
+		$name .= $s->read_set(self::alpha.self::num);
+
+		return $name;
 	}
 
 	private function tagattr(parsebuf $s)
