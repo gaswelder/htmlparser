@@ -1,45 +1,26 @@
 <?php
 
 namespace gaswelder\htmlparser\css;
+use gaswelder\htmlparser\dom\ContainerNode;
 
 class Selector
 {
-	private $groups;
+	private $parts;
 
-	public function __construct($groups)
+	public function __construct($parts)
 	{
-		$this->groups = $groups;
+		$this->parts = $parts;
 	}
 
-	public function select($set)
+	/**
+	 * Scans the given tree and returns the matches.
+	 *
+	 * @param ContainerNode $tree
+	 * @return array
+	 */
+	function select(ContainerNode $tree)
 	{
-		/*
-		 * In general case a single query specifies several groups,
-		 * separated by commas (for example, "p, blockquote").
-		 * A parsed selector is thus an array of such "groups", for each
-		 * of which we do separate filtering and then merge the results
-		 * into one set.
-		 */
-		$result = array();
-		foreach ($this->groups as $group) {
-			$result = array_merge($result, $this->select_subgroup($set, $group));
-		}
-		return $this->unique($result);
-	}
-
-	private function unique($set)
-	{
-		$u = array();
-		foreach ($set as $obj) {
-			if (!in_array($obj, $u, true)) {
-				$u[] = $obj;
-			}
-		}
-		return $u;
-	}
-
-	private function select_subgroup($set, $spec)
-	{
+		$spec = $this->parts;
 		$results = array();
 
 		while (!empty($spec)) {
@@ -65,8 +46,8 @@ class Selector
 			 * Modifiers like '>' and '+' limit the search to immediate
 			 * children or next siblings.
 			 */
-			foreach ($set as $tree) {
-				$results = array_merge($results, $this->search($tree, $rel, $tok));
+			foreach ($tree->children as $node) {
+				$results = array_merge($results, $this->search($node, $rel, $tok));
 			}
 		}
 		return $results;

@@ -12,22 +12,22 @@ const IDCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-
 class SelectorParser
 {
 	/**
-	 * Parses a complete selector.
+	 * Parses a complete selectors group.
 	 *
-	 * A selector in general is a comma-separated sequence of "set specifiers":
-	 * <selector>: <set>, <set>, ...
+	 * A selectors group is a comma-separated sequence of selectors:
+	 * <group>: <selector>, <selector>, ...
 	 *
 	 * @param string $s
-	 * @return Selector
+	 * @return SelectorsGroup
 	 */
 	public function parse($s)
 	{
-		$groups = [];
+		$selectors = [];
 		$sets = array_map('trim', explode(',', $s));
 		foreach ($sets as $set) {
-			$groups[] = $this->parseSet($set);
+			$selectors[] = $this->parseSet($set);
 		}
-		return new Selector($groups);
+		return new SelectorsGroup($selectors);
 	}
 
 	/**
@@ -37,6 +37,7 @@ class SelectorParser
 	 * example: #myid > div ul.myclass
 	 *
 	 * @param string $s
+	 * @return Selector
 	 */
 	private function parseSet($s)
 	{
@@ -85,7 +86,7 @@ class SelectorParser
 			trigger_error("Unexpected character '$ch' in $s");
 			return null;
 		}
-		return $set;
+		return new Selector($set);
 	}
 
 	/*
