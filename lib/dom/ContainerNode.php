@@ -108,9 +108,4 @@ abstract class ContainerNode extends Node
 		if (!empty($s)) return $s[0];
 		return null;
 	}
-
-	function __toString()
-	{
-		return get_class($this);
-	}
 }

@@ -18,4 +18,9 @@ abstract class Node
 	 * @var int
 	 */
 	public $nodeType;
+
+	function __toString()
+	{
+		return "#node(type=$this->nodeType)";
+	}
 }

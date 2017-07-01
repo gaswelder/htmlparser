@@ -17,6 +17,15 @@ class NodeList implements \ArrayAccess, \Iterator
 		$this->length = count($items);
 	}
 
+	function __toString()
+	{
+		$nodes = [];
+		foreach ($this->items as $item) {
+			$nodes[] = $item->__toString();
+		}
+		return 'NodeList [ '.implode(', ', $nodes).' ]';
+	}
+
 	function item($i)
 	{
 		if (!isset($this->items[$i])) {

@@ -47,6 +47,15 @@ class ElementNode extends ContainerNode
 
 	function __toString()
 	{
-		return "ElementNode($this->tagName)";
+		$s = '<'.$this->tagName;
+		$id = $this->getAttribute('id');
+		if ($id) {
+			$s .= "#$id";
+		}
+		foreach ($this->classList as $className) {
+			$s .= ".$className";
+		}
+		$s .= '>';
+		return $s;
 	}
 }
