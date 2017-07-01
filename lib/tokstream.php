@@ -103,14 +103,13 @@ class tokstream
 		else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
 			/*
-			 * If this tag starts a container for another language
-			 * (like JS or CSS), read the following contents without
-			 * parsing.
+			 * If this tag starts a container for another language (like JS or CSS)
+			 * ("raw text container"), read the following "raw text".
 			 */
-			$cdata = array('script', 'style');
-			preg_match('/<([a-zA-Z]+)[\s>]/', $t->content, $m);
-			if (isset($m[1]) && in_array(strtolower($m[1]), $cdata)) {
-				$this->read_cdata($m[1]);
+			$name = $this->isRawTextContainer($t);
+			if ($name) {
+				$rt = $this->readRawText($name);
+				array_unshift($this->peek, $rt);
 			}
 		}
 		else {
@@ -122,20 +121,32 @@ class tokstream
 		return $t;
 	}
 
-	private function read_cdata($name)
+	/*
+	 * If this tag starts a raw text container, returns the tag name.
+	 * Otherwise returns null.
+	 */
+	private function isRawTextContainer(token $t)
 	{
-		/*
-		 * Read everything until the closing tag
-		 */
+		$rawElements = ['script', 'style'];
+		foreach ($rawElements as $name) {
+			$len = strlen($name) + 1;
+			$start = substr($t->content, 0, $len);
+			$nextChar = substr($t->content, $len);
+			if ($start == "<$name" && ($nextChar == '>' || $nextChar == ' ')) {
+				return $name;
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * Reads raw text until the end tag with the given name.
+	 */
+	private function readRawText($name)
+	{
 		$close = "</$name>";
 		$content = $this->buf->until_literal($close);
-		if (!$content) return;
-		/*
-		 * If the data is not empty, cache a 'text' token
-		 * in the peek buffer so that next call to 'get' will
-		 * return it.
-		 */
-		array_unshift($this->peek, new token(token::TEXT, $content));
+		return new token(token::TEXT, $content);
 	}
 
 	private function read_doctype()

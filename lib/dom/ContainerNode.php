@@ -70,13 +70,7 @@ abstract class ContainerNode extends Node
 
 	function getElementsByTagName($name)
 	{
-		$list = array();
-		foreach ($this->childNodes as $ch) {
-			if ($ch->tagName == $name) {
-				$list[] = $ch;
-			}
-		}
-		return new NodeList($list);
+		return $this->querySelectorAll($name);
 	}
 
 	function getElementById($id)
