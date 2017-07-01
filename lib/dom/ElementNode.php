@@ -2,10 +2,22 @@
 
 namespace gaswelder\htmlparser\dom;
 
+class Attr
+{
+	public $name;
+	public $value;
+
+	function __construct($k, $v)
+	{
+		$this->name = $k;
+		$this->value = $v;
+	}
+}
+
 class ElementNode extends ContainerNode
 {
 	public $tagName;
-	public $attrs = array();
+	public $attributes = [];
 	public $classList = array();
 
 	function __construct($name)
@@ -15,20 +27,37 @@ class ElementNode extends ContainerNode
 		$this->nodeType = self::ELEMENT_NODE;
 	}
 
+	private function findAttr($name)
+	{
+		foreach ($this->attributes as $i => $attr) {
+			if ($attr->name == $name) {
+				return $i;
+			}
+		}
+		return -1;
+	}
+
 	function setAttribute($k, $v)
 	{
 		if ($k == 'class') {
 			$this->classList = preg_split('/[ ]+/', $v);
 		}
-		$this->attrs[$k] = $v;
+		$i = $this->findAttr($k);
+		if ($i < 0) {
+			$i = count($this->attributes);
+			$this->attributes[] = new Attr($k, $v);
+		} else {
+			$this->attributes[$i]->value = $v;
+		}
 	}
 
 	function getAttribute($k)
 	{
-		if (isset($this->attrs[$k])) {
-			return $this->attrs[$k];
+		$i = $this->findAttr($k);
+		if ($i < 0) {
+			return null;
 		}
-		return null;
+		return $this->attributes[$i]->value;
 	}
 
 	private static $singles = array(
