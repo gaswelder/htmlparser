@@ -46,4 +46,36 @@ class BasicTest extends TestCase
 
 		$this->assertEquals($ids, ['p1', 'p2']);
 	}
+
+	function testAttributes()
+	{
+		$html = '<!DOCTYPE html><html><body>
+			<!--noindex-->
+			<a rel="nofollow" href="#" id="move_up"><img src="/img/up.png" width="32"></a>
+			<a rel="nofollow" target="_blank" href="https://www.facepalm.com/foobar" id="facepalm" title="Facepalm"></a>
+			<a rel="nofollow" target="_blank" href="http://kgb.com/foobar" id="vkgb" title="velkom komrad"></a>
+			<!--/noindex-->
+			<div class="container">
+				<header>
+					<div id="logo"></div>
+					<a href="http://ooogle.com">oogle</a>
+				</header>
+			</div>
+			<a href="https://bigbrother.com" target="_blank" rel="nofollow">Big Brother is watching you</a>
+			</body>
+			</html>';
+		$selector = 'a[rel="nofollow"][target="_blank"]';
+		$p = new Parser();
+		$doc = $p->parse($html);
+		$expect = [
+			'https://www.facepalm.com/foobar',
+			'http://kgb.com/foobar',
+			'https://bigbrother.com'
+		];
+		$links = [];
+		foreach($doc->querySelectorAll($selector) as $node) {
+			$links[] = $node->getAttribute('href');
+		}
+		$this->assertEquals($expect, $links);
+	}
 }
