@@ -1,5 +1,5 @@
 {
-    "name": "gaswelder/htmlp",
+    "name": "gaswelder/htmlparser",
     "description": "HTML parser and DOM implementation",
     "type": "library",
     "license": "MIT",

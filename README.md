@@ -67,7 +67,7 @@ Also they support these combinators:
 
 Composer dudes do this in the console:
 
-	composer require gaswelder/htmlp
+	composer require gaswelder/htmlparser
 
 Old-school dudes may download the library to whatever $libdir they have
 and do this:
