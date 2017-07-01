@@ -60,24 +60,33 @@ class ElementNode extends ContainerNode
 		return $this->attributes[$i]->value;
 	}
 
-	private static $singles = [
+	private static $voidElements = [
+		'area',
 		'base',
 		'br',
+		'col',
+		'embed',
 		'hr',
 		'img',
 		'input',
+		'keygen',
 		'link',
+		'menuitem',
 		'meta',
+		'param',
+		'source',
+		'track',
+		'wbr',
 	];
 
 	/**
-	 * Returns true if this element is a "childless" element like <br> or <img>.
+	 * Returns true if this element is a "void" element like <br> or <img>.
 	 *
 	 * @return bool
 	 */
-	function _isChildless()
+	function _isVoid()
 	{
-		return in_array($this->tagName, self::$singles);
+		return in_array($this->tagName, self::$voidElements);
 	}
 
 	function __toString()

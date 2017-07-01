@@ -87,7 +87,7 @@ class Parser
 			// If an opening tag, create the element.
 			if ($token->type == token::TAG) {
 				$node = $this->tagParser->parse($token);
-				if (!$node->_isChildless()) {
+				if (!$node->_isVoid()) {
 					$this->parseTree($node);
 					$t = $s->get();
 					if (!$t || !$t->isClosingTag($node->tagName)) {
