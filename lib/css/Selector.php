@@ -1,15 +1,29 @@
 <?php
 
 namespace gaswelder\htmlparser\css;
+use Exception;
 use gaswelder\htmlparser\dom\ContainerNode;
 
 class Selector
 {
-	private $parts;
+	/*
+	 * Recognized selector combinators
+	 */
+	const DESCENDANT = ' ';
+	const CHILD = '>';
+	const ADJACENT_SIBLING = '+';
 
-	public function __construct($parts)
+	/**
+	 * @var array
+	 */
+	private $sequence;
+
+	/**
+	 * @param array $sequence Sequence of ElementsSelectors separated by "combinators".
+	 */
+	public function __construct($sequence)
 	{
-		$this->parts = $parts;
+		$this->sequence = $sequence;
 	}
 
 	/**
@@ -20,14 +34,14 @@ class Selector
 	 */
 	function select(ContainerNode $tree)
 	{
-		$spec = $this->parts;
+		$spec = $this->sequence;
 		$results = array();
 
 		while (!empty($spec)) {
 			/*
 			 * Find out how to search and what to search.
 			 */
-			$rel = ' ';
+			$rel = self::DESCENDANT;
 
 			/*
 			 * If a modifier follows, get it and get the next
@@ -57,32 +71,32 @@ class Selector
 	 * Search given tree for element specified by $spec
 	 * using method $rel ('>', '+', ' ').
 	 */
-	private function search($tree, $rel, $spec)
+	private function search($tree, $combinator, $spec)
 	{
 		$match = array();
 
-		if ($rel == '+') {
+		if ($combinator == self::ADJACENT_SIBLING) {
 			if ($spec->match($tree->nextSibling)) {
 				$match[] = $tree->nextSibling;
 			}
 		}
-		else if ($rel == '>') {
+		else if ($combinator == self::CHILD) {
 			foreach ($tree->children as $child) {
 				if ($spec->match($child)) {
 					$match[] = $child;
 				}
 			}
 		}
-		else if ($rel == ' ') {
+		else if ($combinator == self::DESCENDANT) {
 			foreach ($tree->children as $child) {
 				if ($spec->match($child)) {
 					$match[] = $child;
 				}
-				$match = array_merge($match, $this->search($child, $rel, $spec));
+				$match = array_merge($match, $this->search($child, $combinator, $spec));
 			}
 		}
 		else {
-			trigger_error("Unknown search modifier: '$rel'");
+			throw new Exception("Unknown combinator: '$combinator'");
 		}
 		return $match;
 	}
