@@ -1,9 +1,9 @@
 <?php
 namespace gaswelder\htmlparser\css;
 
+use Exception;
 use gaswelder\htmlparser\parsebuf;
 
-const SPACES = " \t";
 const IDCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-_";
 
 /**
@@ -41,52 +41,34 @@ class SelectorParser
 	 */
 	private function parseSet($s)
 	{
-		$rels = array('>', '+');
+		$s = trim($s);
+		if ($s === '') {
+			throw new Exception('Empty selector string');
+		}
+		$buf = new parsebuf($s);
 
-		/*
-		 * The parsed set will be an array of tokens of two types:
-		 * element specifier and relation modifier.
-		 * Relation modifier is just a single character like '>' or '+'.
-		 * An element specifier is an array with keys described below.
-		 */
-		$set = array();
-
-		$buf = new parsebuf(trim($s));
+		$sequence = [];
+		$sequence[] = $this->readElementSpecifier($buf);
 		while ($buf->more()) {
-			/*
-			 * If one of relation modifiers follows, read it
-			 */
-			if (in_array($buf->peek(), $rels)) {
-				$set[] = $buf->get();
-				$buf->read_set(SPACES);
-				/*
-				 * Make sure that an element specifier follows
-				 */
-				if (!$buf->more() || in_array($buf->peek(), $rels)) {
-					trigger_error("Element specifier expected");
-					return null;
-				}
-			}
-
-			/*
-			 * Read element specifier
-			 */
-			$spec = $this->readElementSpecifier($buf);
-			if (!$spec) return null;
-			if ($spec->is_empty()) {
-				break;
-			}
-
-			$set[] = $spec;
-			$buf->read_set(SPACES);
+			$sequence[] = $this->readCombinator($buf);
+			$sequence[] = $this->readElementSpecifier($buf);
 		}
+		return new Selector($sequence);
+	}
 
-		if ($buf->more()) {
-			$ch = $buf->peek();
-			trigger_error("Unexpected character '$ch' in $s");
-			return null;
+	private function readCombinator(parsebuf $buf)
+	{
+		$combinators = [
+			Selector::DESCENDANT,
+			Selector::CHILD,
+			Selector::ADJACENT_SIBLING
+		];
+
+		$c = $buf->get();
+		if (!in_array($c, $combinators)) {
+			throw new Exception("Selector combinator expected");
 		}
-		return new Selector($set);
+		return $c;
 	}
 
 	/*

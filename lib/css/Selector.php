@@ -23,6 +23,9 @@ class Selector
 	 */
 	public function __construct($sequence)
 	{
+		if (empty($sequence)) {
+			throw new Exception("Empty selector");
+		}
 		$this->sequence = $sequence;
 	}
 
@@ -34,37 +37,41 @@ class Selector
 	 */
 	function select(ContainerNode $tree)
 	{
-		$spec = $this->sequence;
-		$results = array();
+		$stage = [$tree];
+		$combinator = self::DESCENDANT;
+		$sequence = $this->sequence;
 
-		while (!empty($spec)) {
-			/*
-			 * Find out how to search and what to search.
-			 */
-			$rel = self::DESCENDANT;
-
-			/*
-			 * If a modifier follows, get it and get the next
-			 * token which this time will definitely be an element
-			 * specifier.
-			 */
-			$tok = array_shift($spec);
-			if (is_string($tok)) {
-				$rel = $tok;
-				$tok = array_shift($spec);
+		while (!empty($sequence)) {
+			// Get a selector
+			$sel = array_shift($sequence);
+			if (!($sel instanceof ElementSelector)) {
+				throw new Exception("Selector expected in the sequence, got ''$sel'");
 			}
-			assert($tok instanceof ElementSelector);
 
-			/*
-			 * By default (rel=' ') we search the whole subtrees.
-			 * Modifiers like '>' and '+' limit the search to immediate
-			 * children or next siblings.
-			 */
-			foreach ($tree->children as $node) {
-				$results = array_merge($results, $this->search($node, $rel, $tok));
+			// Apply the selector and the combinator to the current result.
+			$stage = $this->scan($stage, $combinator, $sel);
+
+			// Read a combinator
+			$combinator = array_shift($sequence);
+			if (!$combinator) {
+				break;
+			}
+
+			if (empty($sequence)) {
+				throw new Exception("Unexpected end of sequence");
 			}
 		}
-		return $results;
+
+		return $stage;
+	}
+
+	private function scan($stage, $combinator, $selector)
+	{
+		$newStage = [];
+		foreach ($stage as $tree) {
+			$newStage = array_merge($newStage, $this->search($tree, $combinator, $selector));
+		}
+		return $newStage;
 	}
 
 	/*
