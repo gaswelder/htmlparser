@@ -10,16 +10,6 @@ const UTF8_BOM = "\xEF\xBB\xBF";
 
 class Parser
 {
-	private static $singles = array(
-		'hr',
-		'img',
-		'br',
-		'meta',
-		'link',
-		'input',
-		'base'
-	);
-
 	/*
 	 * Parsing options and their defaults
 	 */
@@ -97,7 +87,7 @@ class Parser
 			// If an opening tag, create the element.
 			if ($token->type == token::TAG) {
 				$node = $this->tagParser->parse($token);
-				if (!$this->isChildless($node)) {
+				if (!$node->_isChildless()) {
 					$this->parseTree($node);
 					$t = $s->get();
 					if (!$t || !$t->isClosingTag($node->tagName)) {
@@ -121,18 +111,6 @@ class Parser
 
 			$parent->appendChild($node);
 		}
-	}
-
-	/**
-	 * Returns true if the given element is a "childless" element
-	 * like <br> or <img>/
-	 *
-	 * @param ContainerNode $node
-	 * @return bool
-	 */
-	private function isChildless(ContainerNode $node)
-	{
-		return in_array(strtolower($node->tagName), self::$singles);
 	}
 
 	private function error($msg, $pos = null)

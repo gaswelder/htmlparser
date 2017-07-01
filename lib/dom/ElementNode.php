@@ -60,16 +60,22 @@ class ElementNode extends ContainerNode
 		return $this->attributes[$i]->value;
 	}
 
-	private static $singles = array(
+	private static $singles = [
+		'base',
+		'br',
 		'hr',
 		'img',
-		'br',
-		'meta',
+		'input',
 		'link',
-		'input'
-	);
+		'meta',
+	];
 
-	function is_single()
+	/**
+	 * Returns true if this element is a "childless" element like <br> or <img>.
+	 *
+	 * @return bool
+	 */
+	function _isChildless()
 	{
 		return in_array($this->tagName, self::$singles);
 	}
