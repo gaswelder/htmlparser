@@ -64,9 +64,24 @@ class SelectorParser
 			Selector::ADJACENT_SIBLING
 		];
 
-		$c = $buf->get();
+		// We may have "a b", "a>b", and also "a > b";
+		// In the third case the spaces are just token separators,
+		// while in the first case the space is also the combinator.
+		$spaces = $buf->read_set(' ');
+		if ($spaces === '') {
+			$c = $buf->get();
+		} else {
+			$c = $buf->peek();
+			if (in_array($c, $combinators)) {
+				$c = $buf->get();
+			} else {
+				$c = Selector::DESCENDANT;
+			}
+		}
+		$buf->read_set(' ');
+
 		if (!in_array($c, $combinators)) {
-			throw new Exception("Selector combinator expected");
+			throw new Exception("Selector combinator expected, got '$c'");
 		}
 		return $c;
 	}
