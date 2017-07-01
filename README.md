@@ -1,10 +1,10 @@
 # HTML parser
 
-This is an HTML parser with a DOM implementation. It doesn't depend on
+This is an HTML parser with a minimal DOM implementation. It doesn't depend on
 PHP's bundled libxml and DOM.
 
 
-## Usage
+## Usage example
 
 ```php
 <?php
@@ -19,40 +19,48 @@ try {
 	return;
 }
 
-// work with $doc
+$images = $doc->querySelectorAll('#posts .post img');
+foreach ($images as $img) {
+	$src = $img->getAttribute('src');
+	echo $src, "\n";
+}
 ```
 
 
 ## Features
 
-I wrote it to do validation for HTML documents in some of my projects.
-It was also used for data mining from web.
+The parser can handle some of the broken markup which other libraries I tried
+couldn't. There are several options that make the parser more tolerant, which
+can be set to false to make it stricter:
 
-As it was used for data mining, the DOM implementation has the
-`querySelectorAll` function, so the following can be done:
+* `missing_closing_tags` - cases where someone forgot to add `</div>`, for example;
+* `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
+* `single_quotes` - single quotes around argument values (`<a href='...'>`);
+* `xml_perversion` - mixing XHTML and HTML, like `<br/>` instead of `<br>`.
+
+All of them except `single_quotes` are enabled by default. To specify the
+options pass them as the argument to the constructor:
 
 ```php
 <?php
-$deps = $doc->querySelectorAll('a[rel="nofollow"]');
-foreach($deps as $node) {
-	$url = $node->getAttribute('href');
-	// don't follow $url...
-}
+$parser = new Parser([
+	'xml_perversion' => false
+]);
 ```
 
-CSS2 selectors are not implemented (except the basic attribute
-selectors like in the example above) because it's rarely needed when
-you have a parsed tree object anyway.
+All container nodes (DocumentNode and ElementNode) have the `querySelector` and
+`querySelectorAll` methods which support a limited subset of CSS2:
 
-This parser is a bit strict for generally untidy HTML out there,
-although I added some "mellowing" options when I had to parse some
-pages out there. There are three options which are, sadly, often
-needed:
+* type selectors (like `div`)
+* simple attribute selectors (`[checked]`)
+* class selectors (`.active`)
+* ID selectors (`#main`)
 
-* `xml_perversion` - XML syntax like `<br/>` instead of `<br>`;
-* `single_quotes` - single quotes around argument values (`<a href='...'>`);
-* `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
-* `missing_closing_tags` - cases where someone forgot to add `</div>`, for example.
+Also they support these combinators:
+
+* descendant (`ul li`)
+* child (`ul > li`)
+* sibling (`li + li`)
 
 
 ## Installation
@@ -60,10 +68,6 @@ needed:
 Composer dudes do this in the console:
 
 	composer require gaswelder/htmlp
-
-then, in the project, if not done already:
-
-	require "vendor/autoload.php";
 
 Old-school dudes may download the library to whatever $libdir they have
 and do this:
