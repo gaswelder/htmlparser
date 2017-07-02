@@ -118,4 +118,16 @@ class BasicTest extends TestCase
 
 		$this->assertEquals($list1, $list2);
 	}
+
+	function testRawText()
+	{
+		$raw = 'This is a raw text! </head> <bwahaha>!';
+		$html = '<!DOCTYPE html><html><head></head><body><script type="text">' . $raw . '</script></body></html>';
+
+		$p = new Parser();
+		$doc = $p->parse($html);
+
+		$scripts = $doc->getElementsByTagName('script');
+		$this->assertEquals($raw, $scripts[0]->childNodes[0]->textContent);
+	}
 }
