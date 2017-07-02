@@ -75,3 +75,19 @@ and do this:
 	require "$libdir/htmlparser/init.php";
 
 After that the usage is the same for both types of dudes.
+
+
+## Dumping to the console
+
+The nodes can be printed to the console like in the Firefox's console.
+For example, this code:
+
+```php
+<?php
+$list = $doc->getElementsByTagName('a');
+echo $list, PHP_EOL;
+```
+
+might produce this output:
+
+	NodeList [ <a>, <a#top>, <a.first>, <a>, <a> ]
