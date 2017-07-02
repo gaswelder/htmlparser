@@ -56,7 +56,7 @@ class tokstream
 		if (empty($this->peek)) {
 			$t = $this->read();
 			if (!$t) return null;
-			$this->peek[] = $t;
+			array_unshift($this->peek, $t);
 		}
 		return $this->peek[0];
 	}

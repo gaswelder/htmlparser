@@ -89,4 +89,33 @@ class BasicTest extends TestCase
 		$this->assertEquals(1, $bodies->length);
 		$this->assertEquals('body', $bodies[0]->tagName);
 	}
+
+	function testRawTextTokens()
+	{
+		// When reading raw text, the lexer uses the unget buffer.
+		// If done wrong, that may cause raw text tokens come out of order.
+		$raw = 'This is a raw text! </head> <bwahaha>!';
+		$html = '<!DOCTYPE html><html><head></head><body><script type="text">' . $raw . '</script></body></html>';
+
+		// Read directly
+		$t = new tokstream($html);
+		$list1 = [];
+		while($token = $t->get()) {
+			$list1[] = (string) $token;
+		}
+
+		// Read with unget
+		$t = new tokstream($html);
+		$list2 = [];
+		$token = $t->get();
+		$list2[] = (string) $token;
+		while($t->more()) {
+			$t->unget($token);
+			$token = $t->get();
+			$token = $t->get();
+			$list2[] = (string) $token;
+		}
+
+		$this->assertEquals($list1, $list2);
+	}
 }
