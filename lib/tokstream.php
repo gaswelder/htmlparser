@@ -131,7 +131,7 @@ class tokstream
 		foreach ($rawElements as $name) {
 			$len = strlen($name) + 1;
 			$start = substr($t->content, 0, $len);
-			$nextChar = substr($t->content, $len);
+			$nextChar = substr($t->content, $len, 1);
 			if ($start == "<$name" && ($nextChar == '>' || $nextChar == ' ')) {
 				return $name;
 			}
