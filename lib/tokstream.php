@@ -245,13 +245,18 @@ class tokstream
 
 	private function read_entity()
 	{
-		$s = $this->buf->get();
+		$b = $this->buf;
 
-		while ($this->buf->more() && $this->buf->peek() != ';') {
-			$s .= $this->buf->get();
+		$s = $b->get();
+		while (ctype_alnum($b->peek())) {
+			$s .= $b->get();
 		}
-		$s .= $this->buf->get();
-
+		if ($b->peek() == ';') {
+			$b->get();
+		} else {
+			$this->warning("';' expected");
+		}
+		$s .= ';';
 		return html_entity_decode($s);
 	}
 
@@ -264,6 +269,11 @@ class tokstream
 	private function error($msg)
 	{
 		throw new ParsingException($msg);
+	}
+
+	private function warning($msg)
+	{
+		// var_dump($msg);
 	}
 }
 
