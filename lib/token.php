@@ -11,6 +11,8 @@ class token
 	const TAG = 'tag';
 	const TEXT = 'text';
 
+	const XML_DECLARATION = 'xml_declaration';
+
 	public $type;
 	public $content;
 	public $pos;

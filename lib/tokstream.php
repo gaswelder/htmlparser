@@ -100,6 +100,13 @@ class tokstream
 		else if ($this->buf->literal_follows('<!--')) {
 			$t = $this->read_comment();
 		}
+		/*
+		 * Obviously it's invalid for an HTML document to contain xml
+		 * declarations, but what can you do.
+		 */
+		else if ($this->buf->literal_follows('<?xml')) {
+			$t = $this->read_xml_declaration();
+		}
 		else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
 			/*
@@ -170,6 +177,20 @@ class tokstream
 		}
 
 		return new token(token::DOCTYPE, 'html');
+	}
+
+	private function read_xml_declaration()
+	{
+		$b = $this->buf;
+		$b->skip_literal('<?xml');
+		if (!$b->read_set(self::spaces)) {
+			return $this->error("Missing space after <?xml");
+		}
+		$content = $b->until_literal("?>");
+		if (!$b->skip_literal("?>")) {
+			return $this->error("'?>' expected");
+		}
+		return new token(token::XML_DECLARATION);
 	}
 
 	private function read_comment()

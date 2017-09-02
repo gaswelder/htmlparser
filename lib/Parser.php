@@ -19,6 +19,7 @@ class Parser
 		'single_quotes' => true,
 		'missing_quotes' => false,
 		'missing_closing_tags' => true,
+		'ignore_xml_declarations' => true
 	];
 
 	/**
@@ -81,6 +82,10 @@ class Parser
 			$token = $s->get();
 
 			if ($token->type == token::DOCTYPE) {
+				continue;
+			}
+
+			if ($token->type == token::XML_DECLARATION && $this->options['ignore_xml_declarations']) {
 				continue;
 			}
 

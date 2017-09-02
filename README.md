@@ -36,7 +36,8 @@ can be set to false to make it stricter:
 * `missing_closing_tags` - cases where someone forgot to add `</div>`, for example;
 * `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
 * `single_quotes` - single quotes around argument values (`<a href='...'>`);
-* `xml_perversion` - mixing XHTML and HTML, like `<br/>` instead of `<br>`.
+* `xml_perversion` - mixing XHTML and HTML, like `<br/>` instead of `<br>`;
+* `ignore_xml_declarations` - `<?xml ...?>` tags in the HTML document.
 
 All of them except `single_quotes` are enabled by default. To specify the
 options pass them as the argument to the constructor:
