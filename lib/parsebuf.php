@@ -1,5 +1,8 @@
 <?php
+
 namespace gaswelder\htmlparser;
+
+use \Exception;
 
 /*
  * A string buffer with functions for parsing
@@ -149,8 +152,9 @@ class parsebuf
 
 	function skip_until($ch)
 	{
-		// Only single characters are supported
-		assert(strlen($ch) == 1);
+		if (strlen($ch) != 1) {
+			throw new Exception("skip_until receives only single character argument");
+		}
 
 		$s = '';
 		while ($this->more() && $this->peek() != $ch) {
