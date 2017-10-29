@@ -67,6 +67,16 @@ class tagparser
 			$s->get();
 		}
 
+		if ($this->options['skip_crap']) {
+			$crap = '';
+			while ($s->more() && $s->peek() != '>') {
+				$crap .= $s->get();
+			}
+			if ($crap) {
+				$this->warning("skipped crap: $crap");
+			}
+		}
+
 		$ch = $s->get();
 		if ($ch != '>') {
 			return $this->error("'>' expected, got '$ch'", $s->pos());
@@ -145,5 +155,10 @@ class tagparser
 	{
 		if ($pos) $msg .= " at $pos";
 		throw new ParsingException($msg);
+	}
+
+	private function warning($msg)
+	{
+		//
 	}
 }

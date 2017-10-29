@@ -19,7 +19,8 @@ class Parser
 		'single_quotes' => true,
 		'missing_quotes' => false,
 		'missing_closing_tags' => true,
-		'ignore_xml_declarations' => true
+		'ignore_xml_declarations' => true,
+		'skip_crap' => true
 	];
 
 	/**

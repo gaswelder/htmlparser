@@ -130,4 +130,16 @@ class BasicTest extends TestCase
 		$scripts = $doc->getElementsByTagName('script');
 		$this->assertEquals($raw, $scripts[0]->childNodes[0]->textContent);
 	}
+
+	function testCrap()
+	{
+		$raw = '<div class="row">
+		<img src="foo.jpg" alt="I dont know how to "escape strings"">
+		</div>';
+
+		$p = new Parser();
+		$doc = $p->parse($raw);
+		$img = $doc->getElementsByTagName('img')[0];
+		$this->assertEquals($img->getAttribute('alt'), 'I dont know how to ');
+	}
 }
