@@ -27,6 +27,40 @@ class ElementNode extends ContainerNode
 		$this->nodeType = self::ELEMENT_NODE;
 	}
 
+	function innerHTML()
+	{
+		if ($this->_isVoid()) {
+			return '';
+		}
+		$s = '';
+		foreach ($this->childNodes as $node) {
+			$s .= $node->format();
+		}
+		return $s;
+	}
+
+	protected function format()
+	{
+		$s = '<' . $this->tagName;
+		foreach ($this->attributes as $attr) {
+			$s .= ' ' . $attr->name;
+			if ($attr->value === true) {
+				continue;
+			}
+			$s .= '"' . htmlspecialchars($attr->value) . '"';
+		}
+		if ($this->_isVoid()) {
+			$s .= ' />';
+			return $s;
+		}
+		$s .= '>';
+		foreach ($this->childNodes as $node) {
+			$s .= $node->format();
+		}
+		$s .= '</' . $this->tagName . '>';
+		return $s;
+	}
+
 	private function findAttr($name)
 	{
 		foreach ($this->attributes as $i => $attr) {

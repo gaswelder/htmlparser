@@ -21,4 +21,9 @@ class TextNode extends Node
 		}
 		return "#text \"$s\"";
 	}
+
+	protected function format()
+	{
+		return $this->textContent;
+	}
 }
