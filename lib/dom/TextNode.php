@@ -15,7 +15,7 @@ class TextNode extends Node
 	function __toString()
 	{
 		if (mb_strlen($this->textContent) > 60) {
-			$s = mb_substr($this->textContent, 0, 57).'...';
+			$s = mb_substr($this->textContent, 0, 57) . '...';
 		} else {
 			$s = $this->textContent;
 		}

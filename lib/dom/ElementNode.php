@@ -91,7 +91,7 @@ class ElementNode extends ContainerNode
 
 	function __toString()
 	{
-		$s = '<'.$this->tagName;
+		$s = '<' . $this->tagName;
 		$id = $this->getAttribute('id');
 		if ($id) {
 			$s .= "#$id";

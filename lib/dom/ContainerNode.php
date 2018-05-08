@@ -6,7 +6,7 @@ use gaswelder\htmlparser\css\SelectorParser;
 
 /**
  * A node that has children and all the related
- * method for working with them.
+ * methods for working with them.
  */
 abstract class ContainerNode extends Node
 {
@@ -59,8 +59,7 @@ abstract class ContainerNode extends Node
 		if ($p->firstChild == $this) {
 			if (!empty($p->childNodes)) {
 				$p->firstChild = $p->childNodes[0];
-			}
-			else {
+			} else {
 				$p->firstChild = null;
 			}
 		}
@@ -87,6 +86,8 @@ abstract class ContainerNode extends Node
 	}
 
 	/**
+	 * Returns list of all elements matching the given CSS selector.
+	 *
 	 * @param string $selectorString
 	 * @return NodeList
 	 */

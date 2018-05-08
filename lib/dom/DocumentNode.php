@@ -2,6 +2,9 @@
 
 namespace gaswelder\htmlparser\dom;
 
+/**
+ * Represents a single document.
+ */
 class DocumentNode extends ContainerNode
 {
 	public $type;
