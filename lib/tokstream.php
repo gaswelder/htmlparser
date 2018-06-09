@@ -83,6 +83,20 @@ class tokstream
 		array_unshift($this->peek, $tok);
 	}
 
+	/**
+	 * Reads all the rest of the buffer and returns the tokens as array.
+	 *
+	 * @return array
+	 */
+	function getAll()
+	{
+		$all = [];
+		while ($this->more()) {
+			$all[] = $this->get();
+		}
+		return $all;
+	}
+
 	/*
 	 * Reads a token from the buffer
 	 */
