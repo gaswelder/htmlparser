@@ -58,11 +58,19 @@ class parsebuf
 			$this->line++;
 			$this->linelengths[] = $this->col;
 			$this->col = 1;
-		}
-		else {
+		} else {
 			$this->col++;
 		}
 		return $ch;
+	}
+
+	function expect($ch)
+	{
+		$g = $this->get();
+		if ($g !== $ch) {
+			throw new Exception("'$ch' expected, got '$g'");
+		}
+		return $g;
 	}
 
 	function unget($ch)
