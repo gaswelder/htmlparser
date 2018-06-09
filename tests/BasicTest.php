@@ -3,7 +3,8 @@
 use gaswelder\htmlparser\tokstream;
 use PHPUnit\Framework\TestCase;
 use gaswelder\htmlparser\Parser;
-require __DIR__.'/../init.php';
+
+require __DIR__ . '/../init.php';
 
 class BasicTest extends TestCase
 {
@@ -73,7 +74,7 @@ class BasicTest extends TestCase
 			'https://bigbrother.com'
 		];
 		$links = [];
-		foreach($doc->querySelectorAll($selector) as $node) {
+		foreach ($doc->querySelectorAll($selector) as $node) {
 			$links[] = $node->getAttribute('href');
 		}
 		$this->assertEquals($expect, $links);
@@ -100,20 +101,20 @@ class BasicTest extends TestCase
 		// Read directly
 		$t = new tokstream($html);
 		$list1 = [];
-		while($token = $t->get()) {
-			$list1[] = (string) $token;
+		while ($token = $t->get()) {
+			$list1[] = (string)$token;
 		}
 
 		// Read with unget
 		$t = new tokstream($html);
 		$list2 = [];
 		$token = $t->get();
-		$list2[] = (string) $token;
-		while($t->more()) {
+		$list2[] = (string)$token;
+		while ($t->more()) {
 			$t->unget($token);
 			$token = $t->get();
 			$token = $t->get();
-			$list2[] = (string) $token;
+			$list2[] = (string)$token;
 		}
 
 		$this->assertEquals($list1, $list2);

@@ -80,8 +80,7 @@ class parsebuf
 		if ($ch == "\n") {
 			$this->line--;
 			$this->col = array_pop($this->linelengths);
-		}
-		else {
+		} else {
 			$this->col--;
 		}
 	}
@@ -106,8 +105,8 @@ class parsebuf
 
 	function fcontext($n = 10)
 	{
-		$s = '{'.$this->str[$this->pos].'}';
-		$s .= substr($this->str, $this->pos+1, $n);
+		$s = '{' . $this->str[$this->pos] . '}';
+		$s .= substr($this->str, $this->pos + 1, $n);
 		$s = str_replace(array("\r", "\n", "\t"), array(
 			"\\r",
 			"\\n",

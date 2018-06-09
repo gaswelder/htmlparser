@@ -96,8 +96,7 @@ class tokstream
 
 		if ($this->buf->literal_follows('<!DOCTYPE')) {
 			$t = $this->read_doctype();
-		}
-		else if ($this->buf->literal_follows('<!--')) {
+		} else if ($this->buf->literal_follows('<!--')) {
 			$t = $this->read_comment();
 		}
 		/*
@@ -106,8 +105,7 @@ class tokstream
 		 */
 		else if ($this->buf->literal_follows('<?xml')) {
 			$t = $this->read_xml_declaration();
-		}
-		else if ($this->buf->peek() == '<') {
+		} else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
 			/*
 			 * If this tag starts a container for another language (like JS or CSS)
@@ -118,8 +116,7 @@ class tokstream
 				$rt = $this->readRawText($name);
 				array_unshift($this->peek, $rt);
 			}
-		}
-		else {
+		} else {
 			$t = $this->read_text();
 		}
 
@@ -276,5 +273,3 @@ class tokstream
 		// var_dump($msg);
 	}
 }
-
-?>
