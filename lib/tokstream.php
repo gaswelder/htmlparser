@@ -254,14 +254,22 @@ class tokstream
 		return new token(token::TEXT, $s);
 	}
 
+	// Entities are treated as an encoding by this parser.
+	// They are replaced here at the lower level and don't ever get to the user code.
 	private function read_entity()
 	{
 		$b = $this->buf;
 
-		$s = $b->get();
-		while (ctype_alnum($b->peek())) {
+		$s = $b->expect('&');
+		if ($b->peek() == '#') {
 			$s .= $b->get();
+			$s .= $b->read_set('0123456789');
+		} else {
+			while (ctype_alnum($b->peek())) {
+				$s .= $b->get();
+			}
 		}
+
 		if ($b->peek() == ';') {
 			$b->get();
 		} else {

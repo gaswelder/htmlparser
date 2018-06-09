@@ -143,4 +143,16 @@ class BasicTest extends TestCase
 		$img = $doc->getElementsByTagName('img')[0];
 		$this->assertEquals($img->getAttribute('alt'), 'I dont know how to ');
 	}
+
+	function testEntities()
+	{
+		$raw = 'Foo &amp; Bar Doesn&#8217;t need this.';
+		$nice = 'Foo & Bar Doesn’t need this.';
+		$t = new tokstream($raw);
+
+		$list = $t->getAll();
+
+		$this->assertCount(1, $list);
+		$this->assertEquals($nice, $list[0]->content);
+	}
 }
