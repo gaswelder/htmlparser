@@ -10,7 +10,6 @@ use gaswelder\htmlparser\css\SelectorParser;
  */
 abstract class ContainerNode extends Node
 {
-	public $parentNode = null;
 	public $childNodes = array();
 	/*
 	 * Subset of childNodes which only has element nodes

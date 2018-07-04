@@ -19,6 +19,20 @@ abstract class Node
 	 */
 	public $nodeType;
 
+	public $parentNode = null;
+
+	/**
+	 * Returns the node following this one in the parent.
+	 * Returns null if this node is the last node.
+	 */
+	function nextSibling()
+	{
+		$p = $this->parentNode;
+		$pos = array_search($this, $p->childNodes, true);
+		if ($pos + 1 == count($p->childNodes)) return null;
+		return $p->childNodes[$pos + 1];
+	}
+
 	function __toString()
 	{
 		return "#node(type=$this->nodeType)";
