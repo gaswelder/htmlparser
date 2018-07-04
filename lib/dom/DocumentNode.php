@@ -35,4 +35,15 @@ class DocumentNode extends ContainerNode
 	{
 		return new ElementNode($tagName);
 	}
+
+	/**
+	 * Creates a new text node with the given text.
+	 *
+	 * @param string $text
+	 * @return TextNode
+	 */
+	function createTextNode($text)
+	{
+		return new TextNode($text);
+	}
 }
