@@ -43,7 +43,7 @@ class tagparser
 		$name = $this->readName();
 		$element = new ElementNode($name);
 
-		while(1) {
+		while (1) {
 			// Skip spaces
 			$this->spaces();
 
@@ -105,7 +105,7 @@ class tagparser
 		if (!$name || strpos(self::alpha, $name) === false) {
 			return $this->error("Tag name expected", $s->pos());
 		}
-		$name .= $s->read_set(self::alpha.self::num.':');
+		$name .= $s->read_set(self::alpha . self::num . ':');
 
 		return $name;
 	}
@@ -116,7 +116,7 @@ class tagparser
 	private function attrname()
 	{
 		$s = $this->s;
-		$name = $s->read_set(self::alpha.'-_0123456789:');
+		$name = $s->read_set(self::alpha . '-_0123456789:');
 		return $name;
 	}
 
@@ -149,7 +149,7 @@ class tagparser
 			return $val;
 		}
 
-		return $this->error("Unexpected character: ".$s->peek(), $s->pos());
+		return $this->error("Unexpected character: " . $s->peek(), $s->pos());
 	}
 
 	private function error($msg, $pos = null)

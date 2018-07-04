@@ -39,7 +39,7 @@ class Parser
 		 */
 		$k = array_diff(array_keys($options), array_keys(self::$def));
 		if (!empty($k)) {
-			throw new \Exception("Unknown options: ".implode(', ', $k));
+			throw new \Exception("Unknown options: " . implode(', ', $k));
 		}
 		foreach (self::$def as $k => $v) {
 			if (!isset($options[$k])) {
@@ -103,14 +103,11 @@ class Parser
 						}
 					}
 				}
-			}
-			else if ($token->type == token::TEXT) {
+			} else if ($token->type == token::TEXT) {
 				$node = new TextNode($token->content);
-			}
-			else if ($token->type == token::COMMENT) {
+			} else if ($token->type == token::COMMENT) {
 				$node = new CommentNode($token->content);
-			}
-			else {
+			} else {
 				return $this->error("Unexpected token: $token", $token->pos);
 			}
 

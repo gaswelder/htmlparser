@@ -19,8 +19,8 @@ function test($p, $path)
 {
 	try {
 		$doc = $p->parse(file_get_contents($path));
-	} catch(ParsingException $e) {
-		fwrite(STDERR, $e->getMessage()."\n");
+	} catch (ParsingException $e) {
+		fwrite(STDERR, $e->getMessage() . "\n");
 		return false;
 	}
 

@@ -50,31 +50,29 @@ $parser = new Parser([
 All container nodes (DocumentNode and ElementNode) have the `querySelector` and
 `querySelectorAll` methods which support a limited subset of CSS2:
 
-* type selectors (like `div`)
-* simple attribute selectors (`[checked]`)
-* class selectors (`.active`)
-* ID selectors (`#main`)
+- type selectors (like `div`)
+- simple attribute selectors (`[checked]`)
+- class selectors (`.active`)
+- ID selectors (`#main`)
 
 Also they support these combinators:
 
-* descendant (`ul li`)
-* child (`ul > li`)
-* sibling (`li + li`)
-
+- descendant (`ul li`)
+- child (`ul > li`)
+- sibling (`li + li`)
 
 ## Installation
 
 Composer dudes do this in the console:
 
-	composer require gaswelder/htmlparser
+    composer require gaswelder/htmlparser
 
 Old-school dudes may download the library to whatever $libdir they have
 and do this:
 
-	require "$libdir/htmlparser/init.php";
+    require "$libdir/htmlparser/init.php";
 
 After that the usage is the same for both types of dudes.
-
 
 ## Dumping to the console
 
@@ -89,4 +87,4 @@ echo $list, PHP_EOL;
 
 might produce this output:
 
-	NodeList [ <a>, <a#top>, <a.first>, <a>, <a> ]
+    NodeList [ <a>, <a#top>, <a.first>, <a>, <a> ]
