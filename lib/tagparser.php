@@ -133,11 +133,11 @@ class tagparser
 			if ($s->get() != '"') {
 				return $this->error("'\"' expected", $s->pos());
 			}
-			return $val;
+			return html_entity_decode($val);
 		}
 
 		if ($this->options['missing_quotes'] && ctype_alpha($s->peek())) {
-			return $s->read_set(self::alpha);
+			return html_entity_decode($s->read_set(self::alpha));
 		}
 
 		if ($this->options['single_quotes'] && $s->peek() == "'") {
@@ -146,7 +146,7 @@ class tagparser
 			if ($s->get() != "'") {
 				return $this->error("''' expected", $s->pos());
 			}
-			return $val;
+			return html_entity_decode($val);
 		}
 
 		return $this->error("Unexpected character: " . $s->peek(), $s->pos());

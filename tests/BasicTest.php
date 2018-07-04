@@ -155,4 +155,13 @@ class BasicTest extends TestCase
 		$this->assertCount(1, $list);
 		$this->assertEquals($nice, $list[0]->content);
 	}
+
+	function testAttrEntity()
+	{
+		$html = '<abbr title="Eclog&aelig;">Ecl.</abbr>';
+		$p = new Parser();
+		$doc = $p->parse($html);
+
+		$this->assertEquals('Eclogæ', $doc->firstChild->getAttribute('title'));
+	}
 }
