@@ -18,7 +18,7 @@ class DocumentNode extends ContainerNode
 
 	function format()
 	{
-		$s = '<!DOCTYPE ' . $this->type . ">\n";
+		$s = '<!DOCTYPE ' . $this->type . ">";
 		foreach ($this->childNodes as $node) {
 			$s .= $node->format() . "\n";
 		}
