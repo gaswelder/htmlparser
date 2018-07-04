@@ -15,4 +15,13 @@ class DocumentNode extends ContainerNode
 		$this->type = $type;
 		$this->nodeType = Node::DOCUMENT_NODE;
 	}
+
+	function format()
+	{
+		$s = '<!DOCTYPE ' . $this->type . ">\n";
+		foreach ($this->childNodes as $node) {
+			$s .= $node->format() . "\n";
+		}
+		return $s;
+	}
 }

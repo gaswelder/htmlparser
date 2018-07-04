@@ -22,8 +22,10 @@ class TextNode extends Node
 		return "#text \"$s\"";
 	}
 
-	protected function format()
+	function format()
 	{
-		return $this->textContent;
+		$s = htmlspecialchars($this->textContent);
+		$s = str_replace(' ', '&nbsp;', $s);
+		return $s;
 	}
 }

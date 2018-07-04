@@ -12,6 +12,14 @@ class Attr
 		$this->name = $k;
 		$this->value = $v;
 	}
+
+	function format()
+	{
+		if ($this->value === true) {
+			return $this->name;
+		}
+		return sprintf('%s="%s"', $this->name, htmlspecialchars($this->value));
+	}
 }
 
 class ElementNode extends ContainerNode
@@ -39,18 +47,14 @@ class ElementNode extends ContainerNode
 		return $s;
 	}
 
-	protected function format()
+	function format()
 	{
 		$s = '<' . $this->tagName;
 		foreach ($this->attributes as $attr) {
-			$s .= ' ' . $attr->name;
-			if ($attr->value === true) {
-				continue;
-			}
-			$s .= '"' . htmlspecialchars($attr->value) . '"';
+			$s .= ' ' . $attr->format();
 		}
 		if ($this->_isVoid()) {
-			$s .= ' />';
+			$s .= '>';
 			return $s;
 		}
 		$s .= '>';

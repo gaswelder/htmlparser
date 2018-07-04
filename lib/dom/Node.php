@@ -24,7 +24,7 @@ abstract class Node
 		return "#node(type=$this->nodeType)";
 	}
 
-	protected function format()
+	function format()
 	{
 		trigger_error("format() not implemented for node type " . $this->nodeType);
 	}
