@@ -22,6 +22,39 @@ abstract class Node
 	public $parentNode = null;
 
 	/**
+	 * Removes this node from the parent node's children.
+	 */
+	function remove()
+	{
+		if (!$this->parentNode) return;
+
+		$p = $this->parentNode;
+
+		$pos = array_search($this, $p->childNodes, true);
+		/*
+		 * This element must be in the parent's childNodes
+		 * list, but not necessarily in the children list.
+		 */
+		assert($pos !== false);
+		array_splice($p->childNodes, $pos, 1);
+
+		$pos = array_search($this, $p->children, true);
+		if ($pos !== false) {
+			array_splice($p->children, $pos, 1);
+		}
+
+		if ($p->firstChild == $this) {
+			if (!empty($p->childNodes)) {
+				$p->firstChild = $p->childNodes[0];
+			} else {
+				$p->firstChild = null;
+			}
+		}
+
+		$this->parentNode = null;
+	}
+
+	/**
 	 * Returns the node following this one in the parent.
 	 * Returns null if this node is the last node.
 	 */
