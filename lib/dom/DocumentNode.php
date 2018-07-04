@@ -24,4 +24,15 @@ class DocumentNode extends ContainerNode
 		}
 		return $s;
 	}
+
+	/**
+	 * Creates a new HTML element with the given tag name.
+	 *
+	 * @param string $tagName
+	 * @return ElementNode
+	 */
+	function createElement($tagName)
+	{
+		return new ElementNode($tagName);
+	}
 }
