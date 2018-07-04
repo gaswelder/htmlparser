@@ -36,6 +36,26 @@ abstract class ContainerNode extends Node
 		}
 	}
 
+	/**
+	 * Inserts 'newNode' before the 'beforeNode' node which is a child of this node.
+	 * Returns the 'newNode'.
+	 *
+	 * @param Node $newNode
+	 * @param Node $beforeNode
+	 * @return Node
+	 */
+	function insertBefore($newNode, $beforeNode)
+	{
+		$pos = array_search($beforeNode, $this->childNodes, true);
+		if ($pos < 0) {
+			trigger_error("The 'before' not is not a child of the current node");
+			return;
+		}
+		array_splice($this->childNodes, $pos, 0, [$newNode]);
+		$newNode->parentNode = $this;
+		return $newNode;
+	}
+
 	function getElementsByTagName($name)
 	{
 		return $this->querySelectorAll($name);
