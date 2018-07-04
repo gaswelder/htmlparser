@@ -115,36 +115,11 @@ class SelectorParser
 			$spec->id = $s->read_set(IDCHARS);
 		}
 
+		// Attribute selectors.
 		while ($s->peek() == '[') {
-			$s->get();
-
-			$attr = $s->read_set(IDCHARS);
-			$val = null;
-
-			if ($s->peek() == '=') {
-				$s->get();
-				if ($s->get() != '"') {
-					trigger_error("double quotes expected around attribute value");
-					return null;
-				}
-
-				$val = $s->skip_until('"');
-				if ($s->get() != '"') {
-					trigger_error("missing closing double quote");
-					return null;
-				}
-			}
-
-			if ($s->get() != ']') {
-				trigger_error("']' expected");
-				return null;
-			}
-
-			$spec->attrs[$attr] = $val;
+			$spec->attrs[] = AttributeSelector::parse($s);
 		}
 
 		return $spec;
 	}
 }
-
-?>

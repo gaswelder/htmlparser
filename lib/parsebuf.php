@@ -169,6 +169,9 @@ class parsebuf
 		}
 		return $s;
 	}
-}
 
-?>
+	function error($msg)
+	{
+		throw new Exception("$msg: " . $this->fcontext());
+	}
+}

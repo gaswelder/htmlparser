@@ -9,7 +9,9 @@ class ElementSelector
 	public $tag = '';
 	public $class = '';
 	public $id = '';
-	public $attrs = array();
+
+	// Attribute specifiers
+	public $attrs = [];
 
 	/**
 	 * Returns true if the given element matches this selector.
@@ -34,18 +36,9 @@ class ElementSelector
 			return false;
 		}
 
-		$v = $this->attrs;
-		foreach ($v as $name => $val) {
-			$chval = $child->getAttribute($name);
-			/*
-			 * If the node doesn't have it, return false.
-			 */
-			if ($chval === null) return false;
-			/*
-			 * If the selector specifies a concrete value and
-			 * it doesn't match, return false.
-			 */
-			if ($val !== null && $val !== $chval) {
+		// All attribute specifiers must be satisfied.
+		foreach ($this->attrs as $spec) {
+			if (!$spec->match($child)) {
 				return false;
 			}
 		}

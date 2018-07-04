@@ -51,7 +51,7 @@ All container nodes (DocumentNode and ElementNode) have the `querySelector` and
 `querySelectorAll` methods which support a limited subset of CSS2:
 
 - type selectors (like `div`)
-- simple attribute selectors (`[checked]`)
+- some attribute selectors (`[checked]`, `[attr="val"]`, `[attr$="val"]`, `[attr^="val"]`)
 - class selectors (`.active`)
 - ID selectors (`#main`)
 

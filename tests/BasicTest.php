@@ -48,6 +48,31 @@ class BasicTest extends TestCase
 		$this->assertEquals($ids, ['p1', 'p2']);
 	}
 
+	function testAttributeSelectors()
+	{
+		$html = '<!DOCTYPE html><html><body>
+			<div>
+				<div id="posts">
+					<div class="post foo bar" id="p1"></div>
+					<div class="qwe rty post" id="p2"></div>
+				</div>
+				<div>
+					<div class="post asd" id="p3"></div>
+					<div class="post" id="p4"></div>
+				</div>
+			</div>
+		</body></html>';
+
+		$p = new Parser();
+		$doc = $p->parse($html);
+
+		$this->assertCount(1, $doc->querySelectorAll('[id="posts"]'));
+		$this->assertCount(3, $doc->querySelectorAll('[class^="post"]'));
+		$this->assertCount(1, $doc->querySelectorAll('[id$="3"]'));
+		$this->assertCount(0, $doc->querySelectorAll('[id$="z"]'));
+		$this->assertCount(5, $doc->querySelectorAll('[id]'));
+	}
+
 	function testAttributes()
 	{
 		$html = '<!DOCTYPE html><html><body>
