@@ -132,6 +132,13 @@ class parsebuf
 		return $s;
 	}
 
+	/**
+	 * Skips the given literal string if it immediately follows and returns true.
+	 * If the literal doesn't follow, returns false and does nothing.
+	 *
+	 * @param string $s Literal string to skip
+	 * @return bool
+	 */
 	function skip_literal($s)
 	{
 		$n = strlen($s);
