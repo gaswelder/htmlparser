@@ -15,7 +15,6 @@ class Parser
 	 */
 	private $options;
 	private static $def = [
-		'xml_perversion' => true,
 		'single_quotes' => true,
 		'missing_quotes' => false,
 		'missing_closing_tags' => true,

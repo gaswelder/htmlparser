@@ -3,7 +3,6 @@
 This is an HTML parser with a minimal DOM implementation. It doesn't depend on
 PHP's bundled libxml and DOM.
 
-
 ## Usage example
 
 ```php
@@ -26,19 +25,17 @@ foreach ($images as $img) {
 }
 ```
 
-
 ## Features
 
 The parser can handle some of the broken markup which other libraries I tried
 couldn't. There are several options that make the parser more tolerant, which
 can be set to false to make it stricter:
 
-* `missing_closing_tags` - cases where someone forgot to add `</div>`, for example;
-* `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
-* `single_quotes` - single quotes around argument values (`<a href='...'>`);
-* `xml_perversion` - mixing XHTML and HTML, like `<br/>` instead of `<br>`;
-* `ignore_xml_declarations` - `<?xml ...?>` tags in the HTML document;
-* `skip_crap` - skip invalid markup.
+- `missing_closing_tags` - cases where someone forgot to add `</div>`, for example;
+- `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
+- `single_quotes` - single quotes around argument values (`<a href='...'>`);
+- `ignore_xml_declarations` - `<?xml ...?>` tags in the HTML document;
+- `skip_crap` - skip invalid markup.
 
 All of them except `single_quotes` are enabled by default. To specify the
 options pass them as the argument to the constructor:
@@ -46,7 +43,7 @@ options pass them as the argument to the constructor:
 ```php
 <?php
 $parser = new Parser([
-	'xml_perversion' => false
+	'single_quotes' => false
 ]);
 ```
 

@@ -63,7 +63,8 @@ class tagparser
 			$element->setAttribute($name, $val);
 		}
 
-		if ($this->options['xml_perversion'] && $s->peek() == '/') {
+		// Skip optional XML-style ending.
+		if ($s->peek() == '/') {
 			$s->get();
 		}
 

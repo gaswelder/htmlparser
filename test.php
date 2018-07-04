@@ -5,8 +5,7 @@ use gaswelder\htmlparser\Parser;
 use gaswelder\htmlparser\ParsingException;
 
 $opt = array(
-	'single_quotes' => true,
-	'xml_perversion' => true
+	'single_quotes' => true
 );
 $p = new Parser($opt);
 
