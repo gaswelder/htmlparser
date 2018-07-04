@@ -57,6 +57,8 @@ abstract class Node
 	/**
 	 * Returns the node following this one in the parent.
 	 * Returns null if this node is the last node.
+	 *
+	 * @return Node|null
 	 */
 	function nextSibling()
 	{
@@ -64,6 +66,20 @@ abstract class Node
 		$pos = array_search($this, $p->childNodes, true);
 		if ($pos + 1 == count($p->childNodes)) return null;
 		return $p->childNodes[$pos + 1];
+	}
+
+	/**
+	 * Returns the node immediately preceding this node in its parent's childNodes list.
+	 * Returns null if this node is the first child.
+	 *
+	 * @return Node|null
+	 */
+	function previousSibling()
+	{
+		$p = $this->parentNode;
+		$pos = array_search($this, $p->childNodes, true);
+		if ($pos == 0) return null;
+		return $p->childNodes[$pos - 1];
 	}
 
 	function __toString()
