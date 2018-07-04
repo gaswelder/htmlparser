@@ -26,6 +26,7 @@ abstract class ContainerNode extends Node
 
 	function appendChild($node)
 	{
+		$node->remove();
 		$node->parentNode = $this;
 		$this->childNodes[] = $node;
 		if (!$this->firstChild) {
@@ -51,6 +52,7 @@ abstract class ContainerNode extends Node
 			trigger_error("The 'before' not is not a child of the current node");
 			return;
 		}
+		$newNode->remove();
 		array_splice($this->childNodes, $pos, 0, [$newNode]);
 		$newNode->parentNode = $this;
 		return $newNode;
