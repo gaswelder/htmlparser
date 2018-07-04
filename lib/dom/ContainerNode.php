@@ -58,6 +58,13 @@ abstract class ContainerNode extends Node
 		return $newNode;
 	}
 
+	function lastChild()
+	{
+		$n = count($this->childNodes);
+		if ($n == 0) return null;
+		return $this->childNodes[$n - 1];
+	}
+
 	function getElementsByTagName($name)
 	{
 		return $this->querySelectorAll($name);
