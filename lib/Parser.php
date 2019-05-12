@@ -149,6 +149,21 @@ class Parser
 		}
 
 		if ($token->isClosingTag()) {
+			$n = strtolower($token->_closingTagName());
+			// If this tag doesn't actually close anything, just discard it.
+			$hasAncestor = false;
+			foreach ($ancestors as $p) {
+				if ($p instanceof ElementNode && strtolower($p->tagName) == $n) {
+					$hasAncestor = true;
+					break;
+				}
+			}
+			if (!$hasAncestor) {
+				return null;
+			}
+
+			// Othwerwise let crash for investigation.
+
 			// echo "seeing $token under $parent->tagName\n";
 			// echo "- ";
 			// foreach ($ancestors as $p) {

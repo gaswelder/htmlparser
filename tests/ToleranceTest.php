@@ -44,4 +44,20 @@ class ToleranceTest extends TestCase
         $this->assertEquals('0', $body->getAttribute('FOO'));
         $this->assertEquals('bar', $body->getAttribute('BAR'));
     }
+
+    function testInvalidClosingTags()
+    {
+        $html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+        <HTML>
+        <BODY>
+        <TABLE>
+        <TD>One</TD>
+        <TD>Two</TD>
+        </TR>
+        </TABLE>
+        Foo bar';
+
+        $f = parse($html)->format();
+        $this->assertContains('Foo bar', $f);
+    }
 }

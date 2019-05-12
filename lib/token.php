@@ -31,32 +31,39 @@ class token
 	 */
 	function isClosingTag($name = null)
 	{
-		if ($this->type != self::TAG) {
+		$n = $this->_closingTagName();
+		if (!$n) {
 			return false;
+		}
+		if (!$name) {
+			return true;
+		}
+		return strtolower($name) == strtolower($n);
+	}
+
+	function _closingTagName()
+	{
+		if ($this->type != self::TAG) {
+			return null;
 		}
 
 		if (substr($this->content, 0, 2) != '</' || substr($this->content, -1) != '>') {
-			return false;
+			return null;
 		}
 
-		if ($name === null) {
-			return true;
-		}
-
-		return strtolower(trim(substr($this->content, 2, -1))) == strtolower($name);
+		return trim(substr($this->content, 2, -1));
 	}
 
 	function __toString()
 	{
 		if ($this->content === null) {
-			return '['.$this->type.']';
+			return '[' . $this->type . ']';
 		}
 
 		$n = 40;
 		if (mb_strlen($this->content) > $n) {
-			$c = mb_substr($this->content, 0, $n-3).'...';
-		}
-		else $c = $this->content;
+			$c = mb_substr($this->content, 0, $n - 3) . '...';
+		} else $c = $this->content;
 		$c = str_replace(array("\r", "\n", "\t"), array(
 			"\\r",
 			"\\n",
