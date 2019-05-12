@@ -239,4 +239,19 @@ class BasicTest extends TestCase
 		$this->assertNotContains('</meta>', $f);
 		$this->assertNotContains('</META>', $f);
 	}
+
+	function testWeirdFormatting()
+	{
+		$html = '<p>
+		one<A HREF="CHAPTER_02.HTM#barr"
+		  >two</A
+		>:
+	  </p>
+	  three';
+
+		$f = parse($html)->format();
+		$this->assertContains('one', $f);
+		$this->assertContains('two', $f);
+		$this->assertContains('three', $f);
+	}
 }

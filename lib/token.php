@@ -35,11 +35,15 @@ class token
 			return false;
 		}
 
-		if ($name === null) {
-			return substr($this->content, 0, 2) == '</';
-		} else {
-			return strtolower($this->content) == strtolower("</$name>");
+		if (substr($this->content, 0, 2) != '</' || substr($this->content, -1) != '>') {
+			return false;
 		}
+
+		if ($name === null) {
+			return true;
+		}
+
+		return strtolower(trim(substr($this->content, 2, -1))) == strtolower($name);
 	}
 
 	function __toString()
@@ -61,5 +65,3 @@ class token
 		return "[$this->type, $c]";
 	}
 }
-
-?>
