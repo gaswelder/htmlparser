@@ -214,4 +214,15 @@ class BasicTest extends TestCase
 		$this->assertCount(1, $doc->querySelectorAll('html'));
 		$this->assertCount(1, $doc->querySelectorAll('BODY'));
 	}
+
+	function testUnquoted()
+	{
+		$html = '<BODY FOO=0 BAR=bar></BODY>';
+		$p = new Parser();
+		$doc = $p->parse($html);
+		$body = $doc->querySelector('body');
+
+		$this->assertEquals('0', $body->getAttribute('FOO'));
+		$this->assertEquals('bar', $body->getAttribute('BAR'));
+	}
 }

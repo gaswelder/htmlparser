@@ -16,7 +16,7 @@ class Parser
 	private $options;
 	private static $def = [
 		'single_quotes' => true,
-		'missing_quotes' => false,
+		'missing_quotes' => true,
 		'missing_closing_tags' => true,
 		'ignore_xml_declarations' => true,
 		'skip_crap' => true
@@ -121,5 +121,3 @@ class Parser
 		throw new ParsingException($msg);
 	}
 }
-
-?>

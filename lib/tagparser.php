@@ -136,8 +136,8 @@ class tagparser
 			return html_entity_decode($val);
 		}
 
-		if ($this->options['missing_quotes'] && ctype_alpha($s->peek())) {
-			return html_entity_decode($s->read_set(self::alpha));
+		if ($this->options['missing_quotes'] && ctype_alnum($s->peek())) {
+			return html_entity_decode($s->read_set(self::alpha . self::num));
 		}
 
 		if ($this->options['single_quotes'] && $s->peek() == "'") {

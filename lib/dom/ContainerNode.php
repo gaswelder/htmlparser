@@ -95,9 +95,15 @@ abstract class ContainerNode extends Node
 		return $selector->select($this);
 	}
 
-	function querySelector($sel)
+	/**
+	 * Returns the first node matching the given selector or null.
+	 *
+	 * @param string $selector
+	 * @return ElementNode|null
+	 */
+	function querySelector($selector)
 	{
-		$s = $this->querySelectorAll($sel);
+		$s = $this->querySelectorAll($selector);
 		if (!empty($s)) return $s[0];
 		return null;
 	}
