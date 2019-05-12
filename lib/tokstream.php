@@ -178,9 +178,6 @@ class tokstream
 		}
 
 		$type = $b->skip_until('>');
-		if ($type != "html") {
-			return $this->error("Unknown doctype: $type");
-		}
 
 		$b->read_set(self::spaces);
 		if ($b->get() != '>') {

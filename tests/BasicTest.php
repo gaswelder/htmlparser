@@ -189,4 +189,19 @@ class BasicTest extends TestCase
 
 		$this->assertEquals('Eclogæ', $doc->firstChild->getAttribute('title'));
 	}
+
+	function testDoctype()
+	{
+		$html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+		<HTML>
+		<HEAD>
+		  <META NAME="KeyWords" CONTENT="HAHA,NOT,THAT,SIMPLE,ANYMORE">
+		  <TITLE>DINOSAURS</TITLE>
+		</HEAD>
+		<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#000000" VLINK="#666666" ALINK="#FF0000">
+		</BODY>
+		</HTML>';
+		$p = new Parser();
+		$p->parse($html);
+	}
 }
