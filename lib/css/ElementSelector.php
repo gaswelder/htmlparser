@@ -22,7 +22,7 @@ class ElementSelector
 	public function match(ElementNode $child)
 	{
 		$v = $this->tag;
-		if ($v && $child->tagName != $v) {
+		if ($v && strtolower($child->tagName) != strtolower($v)) {
 			return false;
 		}
 

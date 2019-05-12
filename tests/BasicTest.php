@@ -204,4 +204,14 @@ class BasicTest extends TestCase
 		$p = new Parser();
 		$p->parse($html);
 	}
+
+	function testSelectorCase()
+	{
+		// css selectors should be case-insensitive
+		$html = '<!DOCTYPE html><HTML><body></body></HTML>';
+		$p = new Parser();
+		$doc = $p->parse($html);
+		$this->assertCount(1, $doc->querySelectorAll('html'));
+		$this->assertCount(1, $doc->querySelectorAll('BODY'));
+	}
 }
