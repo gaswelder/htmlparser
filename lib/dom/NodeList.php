@@ -23,7 +23,7 @@ class NodeList implements \ArrayAccess, \Iterator
 		foreach ($this->items as $item) {
 			$nodes[] = $item->__toString();
 		}
-		return 'NodeList [ '.implode(', ', $nodes).' ]';
+		return 'NodeList [ ' . implode(', ', $nodes) . ' ]';
 	}
 
 	function item($i)

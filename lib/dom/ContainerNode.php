@@ -92,7 +92,7 @@ abstract class ContainerNode extends Node
 	function querySelectorAll($selectorString)
 	{
 		$selector = $this->selectorsParser->parse($selectorString);
-		return new NodeList($selector->select($this));
+		return $selector->select($this);
 	}
 
 	function querySelector($sel)
