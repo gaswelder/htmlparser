@@ -46,4 +46,9 @@ class DocumentNode extends ContainerNode
 	{
 		return new TextNode($text);
 	}
+
+	function __toString()
+	{
+		return 'document node';
+	}
 }

@@ -81,17 +81,17 @@ class Parser
 			$this->s->get();
 		}
 
-		$this->parseContents($doc);
+		$this->parseContents($doc, []);
 		return $doc;
 	}
 
 	/**
 	 * Reads and appends contents belonging to the given container node.
 	 */
-	private function parseContents(ContainerNode $parent)
+	private function parseContents(ContainerNode $parent, $ancestors)
 	{
 		while (true) {
-			$node = $this->parseNode($parent);
+			$node = $this->parseNode($parent, $ancestors);
 			if (!$node) break;
 			$parent->appendChild($node);
 		}
@@ -101,7 +101,7 @@ class Parser
 	 * Returns the next node belonging to the given container.
 	 * Returns null if there are no more such nodes.
 	 */
-	private function parseNode(ContainerNode $parent)
+	private function parseNode(ContainerNode $parent, $ancestors)
 	{
 		$s = $this->s;
 
@@ -135,8 +135,26 @@ class Parser
 			return $this->error("Unexpected token: $token", $token->pos);
 		}
 
-		if ($parent instanceof ElementNode && $token->isClosingTag($parent->tagName)) {
-			return null;
+		if ($parent instanceof ElementNode) {
+			// Normal closing tag as expected.
+			if ($token->isClosingTag($parent->tagName)) {
+				return null;
+			}
+
+			// Auto-close 'p'
+			if ($token->isClosingTag() && strtolower($parent->tagName) == 'p') {
+				$s->unget($token);
+				return null;
+			}
+		}
+
+		if ($token->isClosingTag()) {
+			// echo "seeing $token under $parent->tagName\n";
+			// echo "- ";
+			// foreach ($ancestors as $p) {
+			// 	echo "/$p";
+			// }
+			// echo "\n";
 		}
 
 		$node = $this->tagParser->parse($token);
@@ -144,8 +162,16 @@ class Parser
 			return $node;
 		}
 
+		// Autoclose <p> tags.
+		if ($parent instanceof ElementNode) {
+			if (strtolower($parent->tagName) == 'p' && $node->_isBlock()) {
+				$s->unget($token);
+				return null;
+			}
+		}
+
 		// The node is a container, recurse.
-		$this->parseContents($node);
+		$this->parseContents($node, array_merge($ancestors, [$parent]));
 
 		return $node;
 	}

@@ -74,4 +74,19 @@ class BasicTest extends TestCase
 		$this->assertContains('two', $f);
 		$this->assertContains('three', $f);
 	}
+
+	function testAutoclosing()
+	{
+		$table = [
+			['<p>a<p>b', "<!DOCTYPE html><p>a</p>\n<p>b</p>"],
+			['<p>a<div>b</div>', "<!DOCTYPE html><p>a</p>\n<div>b</div>"],
+			['<td><p>hoho</td>', '<!DOCTYPE html><td><p>hoho</p></td>']
+		];
+
+		foreach ($table as $case) {
+			[$html, $fmt] = $case;
+			$f = trim(parse($html)->format());
+			$this->assertEquals($fmt, $f);
+		}
+	}
 }
