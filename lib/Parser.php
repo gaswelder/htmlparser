@@ -5,6 +5,7 @@ use gaswelder\htmlparser\dom\DocumentNode;
 use gaswelder\htmlparser\dom\CommentNode;
 use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\dom\ContainerNode;
+use gaswelder\htmlparser\dom\ElementNode;
 
 const UTF8_BOM = "\xEF\xBB\xBF";
 
@@ -67,52 +68,86 @@ class Parser
 		}
 
 		$this->s = new tokstream($htmlSource);
+
 		$doc = new DocumentNode();
-		$this->parseTree($doc);
+
+		// Read doctype if it's there.
+		if ($this->s->more() && $this->s->peek()->type == 'doctype') {
+			$doc->type = $this->s->get()->content;
+		}
+
+		// Discard invalid nodes at the top level.
+		while ($this->s->more() && $this->s->peek()->isClosingTag()) {
+			$this->s->get();
+		}
+
+		$this->parseContents($doc);
 		return $doc;
 	}
 
-	private function parseTree(ContainerNode $parent)
+	/**
+	 * Reads and appends contents belonging to the given container node.
+	 */
+	private function parseContents(ContainerNode $parent)
+	{
+		while (true) {
+			$node = $this->parseNode($parent);
+			if (!$node) break;
+			$parent->appendChild($node);
+		}
+	}
+
+	/**
+	 * Returns the next node belonging to the given container.
+	 * Returns null if there are no more such nodes.
+	 */
+	private function parseNode(ContainerNode $parent)
 	{
 		$s = $this->s;
 
-		// Read while there are more tokens and the next
-		// token is not a closing tag.
-		while ($s->more() && !$s->peek()->isClosingTag()) {
-			$token = $s->get();
-
-			if ($token->type == token::DOCTYPE) {
+		// Discard doctypes and XML headers strewn around the document.
+		while ($s->more()) {
+			$next = $s->peek();
+			if ($next->type == token::DOCTYPE) {
+				$s->get();
 				continue;
 			}
-
-			if ($token->type == token::XML_DECLARATION && $this->options['ignore_xml_declarations']) {
+			if ($next->type == token::XML_DECLARATION && $this->options['ignore_xml_declarations']) {
+				$s->get();
 				continue;
 			}
-
-			// If an opening tag, create the element.
-			if ($token->type == token::TAG) {
-				$node = $this->tagParser->parse($token);
-				if (!$node->_isVoid()) {
-					$this->parseTree($node);
-					$t = $s->get();
-					if (!$t || !$t->isClosingTag($node->tagName)) {
-						if ($this->options['missing_closing_tags']) {
-							$s->unget($t);
-						} else {
-							return $this->error("Expected closing tag for '$node->tagName', got $t", $t->pos);
-						}
-					}
-				}
-			} else if ($token->type == token::TEXT) {
-				$node = new TextNode($token->content);
-			} else if ($token->type == token::COMMENT) {
-				$node = new CommentNode($token->content);
-			} else {
-				return $this->error("Unexpected token: $token", $token->pos);
-			}
-
-			$parent->appendChild($node);
+			break;
 		}
+
+		if (!$s->more()) {
+			return null;
+		}
+
+		$token = $s->get();
+
+		if ($token->type == token::TEXT) {
+			return new TextNode($token->content);
+		}
+		if ($token->type == token::COMMENT) {
+			return new CommentNode($token->content);
+		}
+		if ($token->type != token::TAG) {
+			return $this->error("Unexpected token: $token", $token->pos);
+		}
+
+		if ($parent instanceof ElementNode && $token->isClosingTag($parent->tagName)) {
+			return null;
+		}
+
+		$node = $this->tagParser->parse($token);
+		if ($node->_isVoid()) {
+			return $node;
+		}
+
+		// The node is a container, recurse.
+		$this->parseContents($node);
+
+		return $node;
 	}
 
 	private function error($msg, $pos = null)
