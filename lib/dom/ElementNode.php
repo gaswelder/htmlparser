@@ -124,7 +124,7 @@ class ElementNode extends ContainerNode
 	 */
 	function _isVoid()
 	{
-		return in_array($this->tagName, self::$voidElements);
+		return in_array(strtolower($this->tagName), self::$voidElements);
 	}
 
 	function __toString()

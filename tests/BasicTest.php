@@ -6,6 +6,12 @@ use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
 
+function parse($html)
+{
+	$p = new Parser();
+	return $p->parse($html);
+}
+
 class BasicTest extends TestCase
 {
 	function test()
@@ -224,5 +230,13 @@ class BasicTest extends TestCase
 
 		$this->assertEquals('0', $body->getAttribute('FOO'));
 		$this->assertEquals('bar', $body->getAttribute('BAR'));
+	}
+
+	function testMeta()
+	{
+		$html = '<head><META name="foo" content="bar"><meta name="foo" content="bar"></head>';
+		$f = parse($html)->format();
+		$this->assertNotContains('</meta>', $f);
+		$this->assertNotContains('</META>', $f);
 	}
 }
