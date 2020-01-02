@@ -1,4 +1,5 @@
 <?php
+
 namespace gaswelder\htmlparser;
 
 use gaswelder\htmlparser\dom\DocumentNode;
@@ -14,10 +15,8 @@ class Parser
 	/*
 	 * Parsing options and their defaults
 	 */
-	private $options;
-	private static $def = [
+	private $options = [
 		'single_quotes' => true,
-		'missing_quotes' => true,
 		'missing_closing_tags' => true,
 		'ignore_xml_declarations' => true,
 		'skip_crap' => true
@@ -33,22 +32,9 @@ class Parser
 	 */
 	private $tagParser;
 
-	function __construct($options = array())
+	function __construct()
 	{
-		/*
-		 * Fill in defaults options where needed
-		 */
-		$k = array_diff(array_keys($options), array_keys(self::$def));
-		if (!empty($k)) {
-			throw new \Exception("Unknown options: " . implode(', ', $k));
-		}
-		foreach (self::$def as $k => $v) {
-			if (!isset($options[$k])) {
-				$options[$k] = $v;
-			}
-		}
-		$this->options = $options;
-		$this->tagParser = new tagparser($options);
+		$this->tagParser = new tagparser($this->options);
 	}
 
 	/**

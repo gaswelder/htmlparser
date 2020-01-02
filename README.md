@@ -27,25 +27,11 @@ foreach ($images as $img) {
 
 ## Features
 
-The parser can handle some of the broken markup which other libraries I tried
-couldn't. There are several options that make the parser more tolerant, which
-can be set to false to make it stricter:
+The parser can handle some of the broken markup artifacts:
 
-- `missing_closing_tags` - cases where someone forgot to add `</div>`, for example;
-- `missing_quotes` - missing quotes around argument values (`<a class=foo>`);
-- `single_quotes` - single quotes around argument values (`<a href='...'>`);
-- `ignore_xml_declarations` - `<?xml ...?>` tags in the HTML document;
-- `skip_crap` - skip invalid markup.
-
-All of them except `single_quotes` are enabled by default. To specify the
-options pass them as the argument to the constructor:
-
-```php
-<?php
-$parser = new Parser([
-	'single_quotes' => false
-]);
-```
+- missing closing tags - a missing `</div>`, for example;
+- single_quotes or no quotes around attribute values (`<a href='poop' target=_blank>`);
+- unexpected `<?xml ...?>` tags in the HTML document;
 
 All container nodes (DocumentNode and ElementNode) have the `querySelector` and
 `querySelectorAll` methods which support a limited subset of CSS2:
@@ -67,8 +53,7 @@ Composer dudes do this in the console:
 
     composer require gaswelder/htmlparser
 
-Old-school dudes may download the library to whatever $libdir they have
-and do this:
+Old-school dudes (if still alive) may download the library to whatever \$libdir they have and do this:
 
     require "$libdir/htmlparser/init.php";
 
