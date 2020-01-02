@@ -60,4 +60,16 @@ class ToleranceTest extends TestCase
         $f = parse($html)->format();
         $this->assertContains('Foo bar', $f);
     }
+
+    function testInvalidNesting1()
+    {
+        $html = '
+        <div>
+        <table>
+        </div>
+        </table>';
+
+        $p = new Parser();
+        $p->parse($html);
+    }
 }

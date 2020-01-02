@@ -136,7 +136,10 @@ class Parser
 
 		if ($token->isClosingTag()) {
 			$n = strtolower($token->_closingTagName());
-			// If this tag doesn't actually close anything, just discard it.
+
+			// This is a tag that closes something else than the current container.
+			// If there's a matching opening ancestor tag, assume it closes that
+			// ancestor and therefore the current container also.
 			$hasAncestor = false;
 			foreach ($ancestors as $p) {
 				if ($p instanceof ElementNode && strtolower($p->tagName) == $n) {
@@ -144,18 +147,13 @@ class Parser
 					break;
 				}
 			}
-			if (!$hasAncestor) {
+			if ($hasAncestor) {
+				// $s->unget($token);
 				return null;
 			}
 
-			// Othwerwise let crash for investigation.
-
-			// echo "seeing $token under $parent->tagName\n";
-			// echo "- ";
-			// foreach ($ancestors as $p) {
-			// 	echo "/$p";
-			// }
-			// echo "\n";
+			// If this tag closes nothing, discard it and try the next token.
+			return $this->parseNode($parent, $ancestors);
 		}
 
 		$node = $this->tagParser->parse($token);
