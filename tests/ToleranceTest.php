@@ -36,7 +36,7 @@ class ToleranceTest extends TestCase
 
     function testUnquoted()
     {
-        $html = '<BODY FOO=0 BAR=bar></BODY>';
+        $html = '<BODY FOO=0 BAR=bar target=_blank></BODY>';
         $p = new Parser();
         $doc = $p->parse($html);
         $body = $doc->querySelector('body');

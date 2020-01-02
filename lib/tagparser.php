@@ -5,7 +5,8 @@ namespace gaswelder\htmlparser;
 use gaswelder\htmlparser\dom\ElementNode;
 
 /**
- * Dedicated parser for tags themselves.
+ * Dedicated parser for tags.
+ * Tags are sequences starting with '<' and ending with '>'.
  */
 class tagparser
 {
@@ -55,7 +56,7 @@ class tagparser
 			// If not, treat the attribute as a boolean.
 			if ($this->s->peek() == '=') {
 				$this->s->get();
-				$val = $this->attrvalue();
+				$val = $this->readAttributeValue();
 			} else {
 				$val = true;
 			}
@@ -123,10 +124,11 @@ class tagparser
 	/**
 	 * Reads attribute value.
 	 */
-	private function attrvalue()
+	private function readAttributeValue()
 	{
 		$s = $this->s;
 
+		// If a quote character follows, read the happy standard case.
 		if ($s->peek() == '"') {
 			$s->get();
 			$val = $s->skip_until('"');
@@ -136,7 +138,8 @@ class tagparser
 			return html_entity_decode($val);
 		}
 
-		if ($this->options['missing_quotes'] && ctype_alnum($s->peek())) {
+		// If no quotes, try reading a value without them.
+		if ($s->peek() == '_' || ctype_alnum($s->peek())) {
 			return html_entity_decode($s->read_set(self::alpha . self::num));
 		}
 
