@@ -2,6 +2,8 @@
 
 namespace gaswelder\htmlparser\dom;
 
+use gaswelder\htmlparser\Parser;
+
 class Attr
 {
 	public $name;
@@ -33,6 +35,29 @@ class ElementNode extends ContainerNode
 		parent::__construct();
 		$this->tagName = $name;
 		$this->nodeType = self::ELEMENT_NODE;
+	}
+
+	function __get($k)
+	{
+		if ($k === 'innerHTML') {
+			return $this->innerHTML();
+		}
+	}
+
+	function __set($k, $v)
+	{
+		if ($k === 'innerHTML') {
+			return $this->setInnerHTML($v);
+		}
+	}
+
+	private function setInnerHTML($html)
+	{
+		if ($this->_isVoid()) {
+			throw new \Exception("Can't set inner HTML to a void node");
+		}
+		$doc = (new Parser)->parse($html);
+		$this->childNodes = $doc->childNodes;
 	}
 
 	function innerHTML()
