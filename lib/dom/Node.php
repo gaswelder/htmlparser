@@ -76,6 +76,15 @@ abstract class Node
 		return $p->childNodes[$pos + 1];
 	}
 
+	function _get_nextElementSibling(): ?ElementNode
+	{
+		$node = $this->nextSibling;
+		while ($node && !($node instanceof ElementNode)) {
+			$node = $node->nextSibling;
+		}
+		return $node;
+	}
+
 	/**
 	 * Returns the node immediately preceding this node in its parent's childNodes list.
 	 * Returns null if this node is the first child.

@@ -1,5 +1,7 @@
 <?php
 
+use gaswelder\htmlparser\dom\ElementNode;
+use gaswelder\htmlparser\dom\TextNode;
 use PHPUnit\Framework\TestCase;
 use gaswelder\htmlparser\Parser;
 
@@ -29,6 +31,19 @@ class BasicTest extends TestCase
 		$bodies = $doc->getElementsByTagName('body');
 		$this->assertEquals(1, $bodies->length);
 		$this->assertEquals('body', $bodies[0]->tagName);
+	}
+
+	function testNextElementSibling()
+	{
+		$html = '<body><b></b>text<i></i>';
+		$doc = (new Parser)->parse($html);
+		$b = $doc->querySelector('b');
+		$next = $b->nextSibling;
+		$this->assertInstanceOf(TextNode::class, $next);
+
+		$nextElement = $b->nextElementSibling;
+		$this->assertInstanceOf(ElementNode::class, $nextElement);
+		$this->assertEquals('i', $nextElement->tagName);
 	}
 
 	function testRawText()
