@@ -71,8 +71,9 @@ function search(ContainerNode $node, $combinator, $spec): array
 {
 	$matches = [];
 	if ($combinator == Selector::ADJACENT_SIBLING) {
-		if ($spec->match($node->nextSibling)) {
-			$matches[] = $node->nextSibling;
+		$next = $node->nextSibling;
+		if ($next && $spec->match($next)) {
+			$matches[] = $next;
 		}
 	} else if ($combinator == Selector::CHILD) {
 		foreach ($node->children as $child) {

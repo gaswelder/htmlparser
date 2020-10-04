@@ -42,6 +42,7 @@ class ElementNode extends ContainerNode
 		if ($k === 'innerHTML') {
 			return $this->innerHTML();
 		}
+		return parent::__get($k);
 	}
 
 	function __set($k, $v)

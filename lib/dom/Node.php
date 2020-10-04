@@ -1,4 +1,5 @@
 <?php
+
 namespace gaswelder\htmlparser\dom;
 
 /**
@@ -54,13 +55,20 @@ abstract class Node
 		$this->parentNode = null;
 	}
 
+	function __get($k)
+	{
+		$f = "_get_$k";
+		if (method_exists($this, $f)) {
+			return call_user_func([$this, $f]);
+		}
+		throw new \Exception("Undefined property: $k");
+	}
+
 	/**
 	 * Returns the node following this one in the parent.
 	 * Returns null if this node is the last node.
-	 *
-	 * @return Node|null
 	 */
-	function nextSibling()
+	function _get_nextSibling(): ?Node
 	{
 		$p = $this->parentNode;
 		$pos = array_search($this, $p->childNodes, true);
@@ -71,10 +79,8 @@ abstract class Node
 	/**
 	 * Returns the node immediately preceding this node in its parent's childNodes list.
 	 * Returns null if this node is the first child.
-	 *
-	 * @return Node|null
 	 */
-	function previousSibling()
+	function _get_previousSibling(): ?Node
 	{
 		$p = $this->parentNode;
 		$pos = array_search($this, $p->childNodes, true);

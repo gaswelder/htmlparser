@@ -99,4 +99,15 @@ class SelectorsTest extends TestCase
         $this->assertCount(1, $doc->querySelectorAll('html'));
         $this->assertCount(1, $doc->querySelectorAll('BODY'));
     }
+
+    function testNextSibling()
+    {
+        $html = '<section><p class="mark">1</p><h1>One</h1></section>
+            <section><p class="mark">2</p><h1>Two</h1></section>';
+        $doc = (new Parser)->parse($html);
+        $hh = $doc->querySelectorAll('p.mark + h1');
+        $this->assertCount(2, $hh);
+        $this->assertEquals('One', $hh[0]->innerHTML);
+        $this->assertEquals('Two', $hh[1]->innerHTML);
+    }
 }
