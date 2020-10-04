@@ -1,6 +1,7 @@
 <?php
 
 namespace gaswelder\htmlparser\css;
+
 use Exception;
 use gaswelder\htmlparser\dom\ContainerNode;
 
@@ -32,79 +33,62 @@ class Selector
 	/**
 	 * Scans the given tree and returns the matches.
 	 *
-	 * @param ContainerNode $tree
+	 * @param ContainerNode $node
 	 * @return array
 	 */
-	function select(ContainerNode $tree)
+	function select(ContainerNode $node)
 	{
-		$stage = [$tree];
-		$combinator = self::DESCENDANT;
+		// The sequence may start as "> foo" or just "foo".
+		// In the latter case we prepend the implied ' ' (descendant) combinator.
 		$sequence = $this->sequence;
-
-		while (!empty($sequence)) {
-			// Get a selector
-			$sel = array_shift($sequence);
-			if (!($sel instanceof ElementSelector)) {
-				throw new Exception("Selector expected in the sequence, got ''$sel'");
-			}
-
-			// Apply the selector and the combinator to the current result.
-			$stage = $this->scan($stage, $combinator, $sel);
-
-			// Read a combinator
-			$combinator = array_shift($sequence);
-			if (!$combinator) {
-				break;
-			}
-
-			if (empty($sequence)) {
-				throw new Exception("Unexpected end of sequence");
-			}
+		if ($sequence[0] instanceof ElementSelector) {
+			array_unshift($sequence, self::DESCENDANT);
 		}
-
-		return $stage;
+		return filter([$node], $sequence);
 	}
+}
 
-	private function scan($stage, $combinator, $selector)
-	{
-		$newStage = [];
-		foreach ($stage as $tree) {
-			$newStage = array_merge($newStage, $this->search($tree, $combinator, $selector));
-		}
-		return $newStage;
+// Takes a list of subtrees and returns the elements that match the selector sequence.
+function filter(array $nodes, array $sequence): array
+{
+	if (count($sequence) === 0) {
+		return $nodes;
 	}
-
-	/*
-	 * Search given tree for element specified by $spec
-	 * using method $rel ('>', '+', ' ').
-	 */
-	private function search($tree, $combinator, $spec)
-	{
-		$match = array();
-
-		if ($combinator == self::ADJACENT_SIBLING) {
-			if ($spec->match($tree->nextSibling)) {
-				$match[] = $tree->nextSibling;
-			}
-		}
-		else if ($combinator == self::CHILD) {
-			foreach ($tree->children as $child) {
-				if ($spec->match($child)) {
-					$match[] = $child;
-				}
-			}
-		}
-		else if ($combinator == self::DESCENDANT) {
-			foreach ($tree->children as $child) {
-				if ($spec->match($child)) {
-					$match[] = $child;
-				}
-				$match = array_merge($match, $this->search($child, $combinator, $spec));
-			}
-		}
-		else {
-			throw new Exception("Unknown combinator: '$combinator'");
-		}
-		return $match;
+	if (count($sequence) === 1) {
+		throw new Exception("got one item in selector sequence, expecting combinator + spec");
 	}
+	[$combinator, $spec] = $sequence;
+	$rest = array_slice($sequence, 2);
+
+	$newStage = [];
+	foreach ($nodes as $node) {
+		$newStage = array_merge($newStage, search($node, $combinator, $spec));
+	}
+	return filter($newStage, $rest);
+}
+
+function search(ContainerNode $node, $combinator, $spec): array
+{
+	$matches = [];
+	if ($combinator == Selector::ADJACENT_SIBLING) {
+		if ($spec->match($node->nextSibling)) {
+			$matches[] = $node->nextSibling;
+		}
+	} else if ($combinator == Selector::CHILD) {
+		foreach ($node->children as $child) {
+			if ($spec->match($child)) {
+				$matches[] = $child;
+			}
+		}
+	} else if ($combinator == Selector::DESCENDANT) {
+		foreach ($node->children as $child) {
+			if ($spec->match($child)) {
+				$matches[] = $child;
+			}
+			$matches = array_merge($matches, search($child, $combinator, $spec));
+		}
+	} else {
+		throw new Exception("Unknown combinator: '$combinator'");
+	}
+	return $matches;
 }

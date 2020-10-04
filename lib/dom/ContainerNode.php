@@ -17,11 +17,8 @@ abstract class ContainerNode extends Node
 	public $children = array();
 	public $firstChild = null;
 
-	private $selectorsParser;
-
 	function __construct()
 	{
-		$this->selectorsParser = new SelectorParser();
 	}
 
 	function appendChild($node)
@@ -85,13 +82,10 @@ abstract class ContainerNode extends Node
 
 	/**
 	 * Returns list of all elements matching the given CSS selector.
-	 *
-	 * @param string $selectorString
-	 * @return NodeList
 	 */
-	function querySelectorAll($selectorString)
+	function querySelectorAll(string $selectorString): NodeList
 	{
-		$selector = $this->selectorsParser->parse($selectorString);
+		$selector = SelectorParser::parse($selectorString);
 		return $selector->select($this);
 	}
 

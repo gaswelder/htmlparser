@@ -1,4 +1,5 @@
 <?php
+
 namespace gaswelder\htmlparser\css;
 
 use Exception;
@@ -16,16 +17,13 @@ class SelectorParser
 	 *
 	 * A selectors group is a comma-separated sequence of selectors:
 	 * <group>: <selector>, <selector>, ...
-	 *
-	 * @param string $s
-	 * @return SelectorsGroup
 	 */
-	public function parse($s)
+	static function parse(string $s): SelectorsGroup
 	{
 		$selectors = [];
 		$sets = array_map('trim', explode(',', $s));
 		foreach ($sets as $set) {
-			$selectors[] = $this->parseSet($set);
+			$selectors[] = self::parseSet($set);
 		}
 		return new SelectorsGroup($selectors);
 	}
@@ -33,13 +31,11 @@ class SelectorParser
 	/**
 	 * Parses a "set specifier", which is almost the same as selector,
 	 * but only in single case, without commas.
+	 *
 	 * <set>: <elem> [<rel>] <elem> [<rel>] ...
 	 * example: #myid > div ul.myclass
-	 *
-	 * @param string $s
-	 * @return Selector
 	 */
-	private function parseSet($s)
+	private static function parseSet(string $s): Selector
 	{
 		$s = trim($s);
 		if ($s === '') {
@@ -48,15 +44,15 @@ class SelectorParser
 		$buf = new parsebuf($s);
 
 		$sequence = [];
-		$sequence[] = $this->readElementSpecifier($buf);
+		$sequence[] = self::readElementSpecifier($buf);
 		while ($buf->more()) {
-			$sequence[] = $this->readCombinator($buf);
-			$sequence[] = $this->readElementSpecifier($buf);
+			$sequence[] = self::readCombinator($buf);
+			$sequence[] = self::readElementSpecifier($buf);
 		}
 		return new Selector($sequence);
 	}
 
-	private function readCombinator(parsebuf $buf)
+	private static function readCombinator(parsebuf $buf): string
 	{
 		$combinators = [
 			Selector::DESCENDANT,
@@ -92,7 +88,7 @@ class SelectorParser
 	 * 	[ "[" <attrname> ["=" <attvalue> ] "]" ]
 	 * example: ul.funk[type="disc"]
 	 */
-	private function readElementSpecifier($buf)
+	private static function readElementSpecifier(parsebuf $buf): ElementSelector
 	{
 		$spec = new ElementSelector();
 
