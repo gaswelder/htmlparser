@@ -8,4 +8,9 @@ class CommentNode extends Node
 	{
 		$this->nodeType = self::COMMENT_NODE;
 	}
+
+	function format()
+	{
+		return '';
+	}
 }
