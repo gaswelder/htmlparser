@@ -96,12 +96,20 @@ class BasicTest extends TestCase
 
 	function testScriptContents()
 	{
-		$html = "<SCRIPT language=\"JavaScript\">
+		$html = "<p>a</p><SCRIpt language=\"JavaScript\">
 		$(document).ready(function () {
 						if (option_val < val && option_val != 0) {
 							$(elm).attr('disabled', 'disabled');
 						}
-					});";
+					});</scripT><p>b</p>";
 		$doc = parse($html);
+		$pp = $doc->querySelectorAll('p');
+		$tags = [];
+		foreach ($doc->childNodes as $cn) {
+			if ($cn->nodeType == 1) {
+				$tags[] = $cn->tagName;
+			}
+		}
+		$this->assertEquals(['p', 'SCRIpt', 'p'], $tags);
 	}
 }

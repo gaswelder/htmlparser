@@ -7,6 +7,7 @@ use \Exception;
 /*
  * A string buffer with functions for parsing
  */
+
 class parsebuf
 {
 	private $str;
@@ -46,6 +47,11 @@ class parsebuf
 			return null;
 		}
 		return $this->str[$this->pos];
+	}
+
+	function peekN($n)
+	{
+		return substr($this->str, $this->pos, $n);
 	}
 
 	function get()

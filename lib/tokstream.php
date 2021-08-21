@@ -166,8 +166,14 @@ class tokstream
 	 */
 	private function readRawText($name)
 	{
+		$b = $this->buf;
+
 		$close = "</$name>";
-		$content = $this->buf->until_literal($close);
+		$n = strlen($close);
+		$content = '';
+		while ($b->more() && strtolower($b->peekN($n)) != strtolower($close)) {
+			$content .= $b->get();
+		}
 		return new token(token::TEXT, $content);
 	}
 
