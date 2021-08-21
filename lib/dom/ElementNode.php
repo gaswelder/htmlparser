@@ -37,29 +37,14 @@ class ElementNode extends ContainerNode
 		$this->nodeType = self::ELEMENT_NODE;
 	}
 
-	function __get($k)
-	{
-		if ($k === 'innerHTML') {
-			return $this->innerHTML();
-		}
-		return parent::__get($k);
-	}
-
-	function __set($k, $v)
-	{
-		if ($k === 'innerHTML') {
-			return $this->setInnerHTML($v);
-		}
-	}
-
-	private function setInnerHTML($html)
-	{
-		if ($this->_isVoid()) {
-			throw new \Exception("Can't set inner HTML to a void node");
-		}
-		$doc = (new Parser)->parse($html);
-		$this->childNodes = $doc->childNodes;
-	}
+	// function setInnerHTML($html)
+	// {
+	// 	if ($this->_isVoid()) {
+	// 		throw new \Exception("Can't set inner HTML to a void node");
+	// 	}
+	// 	$doc = (new Parser)->parse($html);
+	// 	$this->childNodes = $doc->childNodes;
+	// }
 
 	function innerHTML()
 	{

@@ -8,16 +8,16 @@ require __DIR__ . '/../init.php';
 class SelectorsTest extends TestCase
 {
     function testGetElementsByTagName()
-	{
-		$html = '<!DOCTYPE html><html><head></head><body><script type="text">foobar!</script></body></html>';
-		$p = new Parser();
-		$doc = $p->parse($html);
+    {
+        $html = '<!DOCTYPE html><html><head></head><body><script type="text">foobar!</script></body></html>';
+        $p = new Parser();
+        $doc = $p->parse($html);
 
-		$bodies = $doc->getElementsByTagName('body');
-		$this->assertEquals(1, $bodies->length);
-		$this->assertEquals('body', $bodies[0]->tagName);
-	}
-    
+        $bodies = $doc->getElementsByTagName('body');
+        $this->assertEquals(1, $bodies->length);
+        $this->assertEquals('body', $bodies[0]->tagName);
+    }
+
     function testQuerySelectorAll()
     {
         $html = '<!DOCTYPE html><html><body>
@@ -118,7 +118,7 @@ class SelectorsTest extends TestCase
         $doc = (new Parser)->parse($html);
         $hh = $doc->querySelectorAll('p.mark + h1');
         $this->assertCount(2, $hh);
-        $this->assertEquals('One', $hh[0]->innerHTML);
-        $this->assertEquals('Two', $hh[1]->innerHTML);
+        $this->assertEquals('One', $hh[0]->innerHTML());
+        $this->assertEquals('Two', $hh[1]->innerHTML());
     }
 }

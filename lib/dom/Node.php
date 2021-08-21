@@ -55,20 +55,11 @@ abstract class Node
 		$this->parentNode = null;
 	}
 
-	function __get($k)
-	{
-		$f = "_get_$k";
-		if (method_exists($this, $f)) {
-			return call_user_func([$this, $f]);
-		}
-		throw new \Exception("Undefined property: $k");
-	}
-
 	/**
 	 * Returns the node following this one in the parent.
 	 * Returns null if this node is the last node.
 	 */
-	function _get_nextSibling(): ?Node
+	function nextSibling(): ?Node
 	{
 		$p = $this->parentNode;
 		$pos = array_search($this, $p->childNodes, true);
@@ -76,11 +67,11 @@ abstract class Node
 		return $p->childNodes[$pos + 1];
 	}
 
-	function _get_nextElementSibling(): ?ElementNode
+	function nextElementSibling(): ?ElementNode
 	{
-		$node = $this->nextSibling;
+		$node = $this->nextSibling();
 		while ($node && !($node instanceof ElementNode)) {
-			$node = $node->nextSibling;
+			$node = $node->nextSibling();
 		}
 		return $node;
 	}
@@ -89,7 +80,7 @@ abstract class Node
 	 * Returns the node immediately preceding this node in its parent's childNodes list.
 	 * Returns null if this node is the first child.
 	 */
-	function _get_previousSibling(): ?Node
+	function previousSibling(): ?Node
 	{
 		$p = $this->parentNode;
 		$pos = array_search($this, $p->childNodes, true);

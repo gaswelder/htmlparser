@@ -27,10 +27,10 @@ class BasicTest extends TestCase
 		$html = '<body><b></b>text<i></i>';
 		$doc = (new Parser)->parse($html);
 		$b = $doc->querySelector('b');
-		$next = $b->nextSibling;
+		$next = $b->nextSibling();
 		$this->assertInstanceOf(TextNode::class, $next);
 
-		$nextElement = $b->nextElementSibling;
+		$nextElement = $b->nextElementSibling();
 		$this->assertInstanceOf(ElementNode::class, $nextElement);
 		$this->assertEquals('i', $nextElement->tagName);
 	}
