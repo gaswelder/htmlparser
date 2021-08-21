@@ -72,4 +72,10 @@ class ToleranceTest extends TestCase
         $p = new Parser();
         $p->parse($html);
     }
+
+    function testAsp()
+    {
+        $doc = parse('<p><%abc%></p>');
+        $this->assertEquals('', $doc->querySelector('p')->innerHTML());
+    }
 }

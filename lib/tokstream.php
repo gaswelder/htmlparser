@@ -109,23 +109,26 @@ class tokstream
 		}
 
 		$pos = $this->buf->pos();
+		$t = null;
 
 		if ($this->buf->literal_follows('<!DOCTYPE')) {
 			$t = $this->read_doctype();
 		} else if ($this->buf->literal_follows('<!--')) {
 			$t = $this->read_comment();
 		}
-		/*
-		 * Obviously it's invalid for an HTML document to contain xml
-		 * declarations, but what can you do.
-		 */ else if ($this->buf->literal_follows('<?xml')) {
+		// Invalid XML declarations.
+		else if ($this->buf->literal_follows('<?xml')) {
 			$t = $this->read_xml_declaration();
-		} else if ($this->buf->peek() == '<') {
+		}
+		// Invalid ASP tags, discard
+		else if ($this->buf->literal_follows('<%')) {
+			$this->discard_asp_tag();
+			return $this->read();
+		}
+		// If this tag starts a container for another language (like JS or CSS)
+		// ("raw text container"), read the raw text.
+		else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
-			/*
-			 * If this tag starts a container for another language (like JS or CSS)
-			 * ("raw text container"), read the following "raw text".
-			 */
 			$name = $this->isRawTextContainer($t);
 			if ($name) {
 				$rt = $this->readRawText($name);
@@ -200,6 +203,17 @@ class tokstream
 			return $this->error("'?>' expected");
 		}
 		return new token(token::XML_DECLARATION);
+	}
+
+	private function discard_asp_tag()
+	{
+		$this->buf->skip_literal('<%');
+		while ($this->buf->more()) {
+			$ch = $this->buf->get();
+			if ($ch == '>') {
+				break;
+			}
+		}
 	}
 
 	private function read_comment()
