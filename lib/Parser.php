@@ -12,16 +12,6 @@ const UTF8_BOM = "\xEF\xBB\xBF";
 
 class Parser
 {
-	/*
-	 * Parsing options and their defaults
-	 */
-	private $options = [
-		'single_quotes' => true,
-		'missing_closing_tags' => true,
-		'ignore_xml_declarations' => true,
-		'skip_crap' => true
-	];
-
 	/**
 	 * @var tokstream
 	 */
@@ -34,7 +24,7 @@ class Parser
 
 	function __construct()
 	{
-		$this->tagParser = new tagparser($this->options);
+		$this->tagParser = new tagparser();
 	}
 
 	/**
@@ -98,7 +88,7 @@ class Parser
 				$s->get();
 				continue;
 			}
-			if ($next->type == token::XML_DECLARATION && $this->options['ignore_xml_declarations']) {
+			if ($next->type == token::XML_DECLARATION) {
 				$s->get();
 				continue;
 			}

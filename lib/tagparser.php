@@ -19,13 +19,6 @@ class tagparser
 	 */
 	private $s;
 
-	private $options;
-
-	function __construct($options)
-	{
-		$this->options = $options;
-	}
-
 	/**
 	 * Parses a tag token and returns the corresponding element.
 	 *
@@ -69,14 +62,13 @@ class tagparser
 			$s->get();
 		}
 
-		if ($this->options['skip_crap']) {
-			$crap = '';
-			while ($s->more() && $s->peek() != '>') {
-				$crap .= $s->get();
-			}
-			if ($crap) {
-				$this->warning("skipped crap: $crap");
-			}
+		// Skip some crap.
+		$crap = '';
+		while ($s->more() && $s->peek() != '>') {
+			$crap .= $s->get();
+		}
+		if ($crap) {
+			$this->warning("skipped crap: $crap");
 		}
 
 		$ch = $s->get();
@@ -143,7 +135,8 @@ class tagparser
 			return html_entity_decode($s->read_set(self::alpha . self::num));
 		}
 
-		if ($this->options['single_quotes'] && $s->peek() == "'") {
+		// Try reading a value in single quotes.
+		if ($s->peek() == "'") {
 			$s->get();
 			$val = $s->skip_until("'");
 			if ($s->get() != "'") {

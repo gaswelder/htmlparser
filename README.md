@@ -30,7 +30,6 @@ foreach ($images as $img) {
 The parser can handle some of the broken markup artifacts:
 
 - missing closing tags - a missing `</div>`, for example;
-- single_quotes or no quotes around attribute values (`<a href='poop' target=_blank>`);
 - unexpected `<?xml ...?>` tags in the HTML document;
 
 All container nodes (DocumentNode and ElementNode) have the `querySelector` and

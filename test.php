@@ -4,10 +4,7 @@ require 'init.php';
 use gaswelder\htmlparser\Parser;
 use gaswelder\htmlparser\ParsingException;
 
-$opt = array(
-	'single_quotes' => true
-);
-$p = new Parser($opt);
+$p = new Parser();
 
 $paths = glob('test/*.html');
 foreach ($paths as $path) {
