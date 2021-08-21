@@ -93,4 +93,15 @@ class BasicTest extends TestCase
 			$this->assertEquals($fmt, $f);
 		}
 	}
+
+	function testScriptContents()
+	{
+		$html = "<SCRIPT language=\"JavaScript\">
+		$(document).ready(function () {
+						if (option_val < val && option_val != 0) {
+							$(elm).attr('disabled', 'disabled');
+						}
+					});";
+		$doc = parse($html);
+	}
 }

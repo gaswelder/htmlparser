@@ -1,9 +1,11 @@
 <?php
+
 namespace gaswelder\htmlparser;
 
 /*
  * First stage parser for HTML documents.
  */
+
 class tokstream
 {
 	const spaces = "\r\n\t ";
@@ -116,8 +118,7 @@ class tokstream
 		/*
 		 * Obviously it's invalid for an HTML document to contain xml
 		 * declarations, but what can you do.
-		 */
-		else if ($this->buf->literal_follows('<?xml')) {
+		 */ else if ($this->buf->literal_follows('<?xml')) {
 			$t = $this->read_xml_declaration();
 		} else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
@@ -150,7 +151,7 @@ class tokstream
 			$len = strlen($name) + 1;
 			$start = substr($t->content, 0, $len);
 			$nextChar = substr($t->content, $len, 1);
-			if ($start == "<$name" && ($nextChar == '>' || $nextChar == ' ')) {
+			if (strtolower($start) == "<$name" && ($nextChar == '>' || ctype_space($nextChar))) {
 				return $name;
 			}
 		}
