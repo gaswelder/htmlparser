@@ -7,6 +7,17 @@ require __DIR__ . '/../init.php';
 
 class SelectorsTest extends TestCase
 {
+    function testGetElementsByTagName()
+	{
+		$html = '<!DOCTYPE html><html><head></head><body><script type="text">foobar!</script></body></html>';
+		$p = new Parser();
+		$doc = $p->parse($html);
+
+		$bodies = $doc->getElementsByTagName('body');
+		$this->assertEquals(1, $bodies->length);
+		$this->assertEquals('body', $bodies[0]->tagName);
+	}
+    
     function testQuerySelectorAll()
     {
         $html = '<!DOCTYPE html><html><body>

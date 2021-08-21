@@ -22,17 +22,6 @@ class BasicTest extends TestCase
 		$p->parse($html);
 	}
 
-	function testGetElementsByTagName()
-	{
-		$html = '<!DOCTYPE html><html><head></head><body><script type="text">foobar!</script></body></html>';
-		$p = new Parser();
-		$doc = $p->parse($html);
-
-		$bodies = $doc->getElementsByTagName('body');
-		$this->assertEquals(1, $bodies->length);
-		$this->assertEquals('body', $bodies[0]->tagName);
-	}
-
 	function testNextElementSibling()
 	{
 		$html = '<body><b></b>text<i></i>';
