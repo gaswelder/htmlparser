@@ -7,26 +7,13 @@ use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
 
-class BasicTest extends TestCase
+class ParseTest extends TestCase
 {
 	function test()
 	{
 		$html = "<!DOCTYPE html><html></html>";
 		$p = new Parser();
 		$p->parse($html);
-	}
-
-	function testNextElementSibling()
-	{
-		$html = '<body><b></b>text<i></i>';
-		$doc = (new Parser)->parse($html);
-		$b = $doc->querySelector('b');
-		$next = $b->nextSibling();
-		$this->assertInstanceOf(TextNode::class, $next);
-
-		$nextElement = $b->nextElementSibling();
-		$this->assertInstanceOf(ElementNode::class, $nextElement);
-		$this->assertEquals('i', $nextElement->tagName);
 	}
 
 	function testRawText()
