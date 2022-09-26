@@ -7,12 +7,6 @@ use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
 
-function parse($html)
-{
-	$p = new Parser();
-	return $p->parse($html);
-}
-
 class BasicTest extends TestCase
 {
 	function test()
@@ -59,7 +53,7 @@ class BasicTest extends TestCase
 	function testMeta()
 	{
 		$html = '<head><META name="foo" content="bar"><meta name="foo" content="bar"></head>';
-		$f = parse($html)->format();
+		$f = Parser::parse($html)->format();
 		$this->assertNotContains('</meta>', $f);
 		$this->assertNotContains('</META>', $f);
 	}
@@ -73,7 +67,7 @@ class BasicTest extends TestCase
 	  </p>
 	  three';
 
-		$f = parse($html)->format();
+		$f = Parser::parse($html)->format();
 		$this->assertContains('one', $f);
 		$this->assertContains('two', $f);
 		$this->assertContains('three', $f);
@@ -89,7 +83,7 @@ class BasicTest extends TestCase
 
 		foreach ($table as $case) {
 			[$html, $fmt] = $case;
-			$f = trim(parse($html)->format());
+			$f = trim(Parser::parse($html)->format());
 			$this->assertEquals($fmt, $f);
 		}
 	}
@@ -102,7 +96,7 @@ class BasicTest extends TestCase
 							$(elm).attr('disabled', 'disabled');
 						}
 					});</scripT><p>b</p>";
-		$doc = parse($html);
+		$doc = Parser::parse($html);
 		$pp = $doc->querySelectorAll('p');
 		$tags = [];
 		foreach ($doc->childNodes as $cn) {

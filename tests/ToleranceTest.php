@@ -57,7 +57,7 @@ class ToleranceTest extends TestCase
         </TABLE>
         Foo bar';
 
-        $f = parse($html)->format();
+        $f = Parser::parse($html)->format();
         $this->assertContains('Foo bar', $f);
     }
 
@@ -75,7 +75,7 @@ class ToleranceTest extends TestCase
 
     function testAsp()
     {
-        $doc = parse('<p><%abc%></p>');
+        $doc = Parser::parse('<p><%abc%></p>');
         $this->assertEquals('', $doc->querySelector('p')->innerHTML());
     }
 }

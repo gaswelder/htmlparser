@@ -13,61 +13,43 @@ const UTF8_BOM = "\xEF\xBB\xBF";
 class Parser
 {
 	/**
-	 * @var tokstream
-	 */
-	private $s;
-
-	/**
-	 * @var tagparser
-	 */
-	private $tagParser;
-
-	function __construct()
-	{
-		$this->tagParser = new tagparser();
-	}
-
-	/**
 	 * Parses the given HTML source.
 	 *
 	 * @param string $htmlSource
 	 * @return DocumentNode
 	 * @throws ParsingException
 	 */
-	function parse($htmlSource)
+	static function parse($htmlSource)
 	{
-		/*
-		 * Skip UTF-8 marker if it's present
-		 */
+		// Skip UTF-8 marker if it's present
 		if (substr($htmlSource, 0, 3) == UTF8_BOM) {
 			$htmlSource = substr($htmlSource, 3);
 		}
 
-		$this->s = new tokstream($htmlSource);
-
+		$tokens = new tokstream($htmlSource);
 		$doc = new DocumentNode();
 
 		// Read doctype if it's there.
-		if ($this->s->more() && $this->s->peek()->type == 'doctype') {
-			$doc->type = $this->s->get()->content;
+		if ($tokens->more() && $tokens->peek()->type == 'doctype') {
+			$doc->type = $tokens->get()->content;
 		}
 
 		// Discard invalid nodes at the top level.
-		while ($this->s->more() && $this->s->peek()->isClosingTag()) {
-			$this->s->get();
+		while ($tokens->more() && $tokens->peek()->isClosingTag()) {
+			$tokens->get();
 		}
 
-		$this->parseContents($doc, []);
+		self::parseContents($tokens, $doc, []);
 		return $doc;
 	}
 
 	/**
 	 * Reads and appends contents belonging to the given container node.
 	 */
-	private function parseContents(ContainerNode $parent, $ancestors)
+	private static function parseContents(tokstream $tokens, ContainerNode $parent, $ancestors)
 	{
 		while (true) {
-			$node = $this->parseNode($parent, $ancestors);
+			$node = self::parseNode($tokens, $parent, $ancestors);
 			if (!$node) break;
 			$parent->appendChild($node);
 		}
@@ -77,29 +59,27 @@ class Parser
 	 * Returns the next node belonging to the given container.
 	 * Returns null if there are no more such nodes.
 	 */
-	private function parseNode(ContainerNode $parent, $ancestors)
+	private static function parseNode(tokstream $tokens, ContainerNode $parent, $ancestors)
 	{
-		$s = $this->s;
-
 		// Discard doctypes and XML headers strewn around the document.
-		while ($s->more()) {
-			$next = $s->peek();
+		while ($tokens->more()) {
+			$next = $tokens->peek();
 			if ($next->type == token::DOCTYPE) {
-				$s->get();
+				$tokens->get();
 				continue;
 			}
 			if ($next->type == token::XML_DECLARATION) {
-				$s->get();
+				$tokens->get();
 				continue;
 			}
 			break;
 		}
 
-		if (!$s->more()) {
+		if (!$tokens->more()) {
 			return null;
 		}
 
-		$token = $s->get();
+		$token = $tokens->get();
 
 		if ($token->type == token::TEXT) {
 			return new TextNode($token->content);
@@ -108,7 +88,7 @@ class Parser
 			return new CommentNode($token->content);
 		}
 		if ($token->type != token::TAG) {
-			return $this->error("Unexpected token: $token", $token->pos);
+			throw new ParsingException("Unexpected token: $token at $token->pos");
 		}
 
 		if ($parent instanceof ElementNode) {
@@ -119,7 +99,7 @@ class Parser
 
 			// Auto-close 'p'
 			if ($token->isClosingTag() && strtolower($parent->tagName) == 'p') {
-				$s->unget($token);
+				$tokens->unget($token);
 				return null;
 			}
 		}
@@ -138,15 +118,15 @@ class Parser
 				}
 			}
 			if ($hasAncestor) {
-				// $s->unget($token);
+				// $tokens->unget($token);
 				return null;
 			}
 
 			// If this tag closes nothing, discard it and try the next token.
-			return $this->parseNode($parent, $ancestors);
+			return self::parseNode($tokens, $parent, $ancestors);
 		}
 
-		$node = $this->tagParser->parse($token);
+		$node = (new tagparser())->parse($token);
 		if ($node->_isVoid()) {
 			return $node;
 		}
@@ -154,20 +134,14 @@ class Parser
 		// Autoclose <p> tags.
 		if ($parent instanceof ElementNode) {
 			if (strtolower($parent->tagName) == 'p' && $node->_isBlock()) {
-				$s->unget($token);
+				$tokens->unget($token);
 				return null;
 			}
 		}
 
 		// The node is a container, recurse.
-		$this->parseContents($node, array_merge($ancestors, [$parent]));
+		self::parseContents($tokens, $node, array_merge($ancestors, [$parent]));
 
 		return $node;
-	}
-
-	private function error($msg, $pos = null)
-	{
-		if ($pos) $msg .= " at $pos";
-		throw new ParsingException($msg);
 	}
 }
