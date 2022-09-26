@@ -1,4 +1,5 @@
 <?php
+
 namespace gaswelder\htmlparser;
 
 class token
@@ -23,47 +24,21 @@ class token
 		$this->content = $content;
 	}
 
-	/**
-	 * Returns true if this token is a closing tag.
-	 *
-	 * @param string $name (optional) specifies the name of the tag
-	 * @return bool
-	 */
-	function isClosingTag($name = null)
-	{
-		$n = $this->_closingTagName();
-		if (!$n) {
-			return false;
-		}
-		if (!$name) {
-			return true;
-		}
-		return strtolower($name) == strtolower($n);
-	}
-
-	function _closingTagName()
-	{
-		if ($this->type != self::TAG) {
-			return null;
-		}
-
-		if (substr($this->content, 0, 2) != '</' || substr($this->content, -1) != '>') {
-			return null;
-		}
-
-		return trim(substr($this->content, 2, -1));
-	}
-
 	function __toString()
 	{
 		if ($this->content === null) {
 			return '[' . $this->type . ']';
 		}
+		if ($this->type == token::TAG) {
+			$content = $this->content[0] . " ...";
+		} else {
+			$content = $this->content;
+		}
 
 		$n = 40;
-		if (mb_strlen($this->content) > $n) {
-			$c = mb_substr($this->content, 0, $n - 3) . '...';
-		} else $c = $this->content;
+		if (mb_strlen($content) > $n) {
+			$c = mb_substr($content, 0, $n - 3) . '...';
+		} else $c = $content;
 		$c = str_replace(array("\r", "\n", "\t"), array(
 			"\\r",
 			"\\n",

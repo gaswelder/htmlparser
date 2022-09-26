@@ -16,6 +16,15 @@ class ParseTest extends TestCase
 		$p->parse($html);
 	}
 
+	function testNested()
+	{
+		$doc = Parser::parse('<p><span>info</span></p>');
+		$p = $doc->firstChild;
+		$this->assertEquals('p', $p->tagName);
+		$span = $p->firstChild;
+		$this->assertEquals('span', $span->tagName);
+	}
+
 	function testRawText()
 	{
 		$raw = 'This is a raw text! </head> <bwahaha>!';
@@ -84,7 +93,6 @@ class ParseTest extends TestCase
 						}
 					});</scripT><p>b</p>";
 		$doc = Parser::parse($html);
-		$pp = $doc->querySelectorAll('p');
 		$tags = [];
 		foreach ($doc->childNodes as $cn) {
 			if ($cn->nodeType == 1) {

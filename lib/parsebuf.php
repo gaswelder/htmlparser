@@ -70,6 +70,15 @@ class parsebuf
 		return $ch;
 	}
 
+	function peekget($ch)
+	{
+		if ($this->peek() === $ch) {
+			$this->get();
+			return true;
+		}
+		return false;
+	}
+
 	function expect($ch)
 	{
 		$g = $this->get();

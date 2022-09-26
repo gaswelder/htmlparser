@@ -19,6 +19,15 @@ class ToleranceTest extends TestCase
         $this->assertEquals($img->getAttribute('alt'), 'I dont know how to ');
     }
 
+    function testCrap2()
+    {
+        $html = '<img data-image-caption="<p>your wp plugin has a bug</p>
+        " />';
+        $doc = Parser::parse($html);
+        $img = $doc->firstChild;
+        $this->assertEquals(trim($img->getAttribute('data-image-caption')), '<p>your wp plugin has a bug</p>');
+    }
+
     function testDoctype()
     {
         $html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">

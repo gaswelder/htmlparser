@@ -9,6 +9,8 @@ namespace gaswelder\htmlparser;
 class tokstream
 {
 	const spaces = "\r\n\t ";
+	const alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const num = "0123456789";
 
 	/*
 	 * A parsebuf instance
@@ -129,10 +131,11 @@ class tokstream
 		// ("raw text container"), read the raw text.
 		else if ($this->buf->peek() == '<') {
 			$t = $this->read_tag();
-			$name = $this->isRawTextContainer($t);
-			if ($name) {
-				$rt = $this->readRawText($name);
-				array_unshift($this->peek, $rt);
+			$tagName = $t->content[0];
+			$tagNameLC = strtolower($tagName);
+			if ($tagNameLC == 'style' || $tagNameLC == 'script') {
+				$rawText = $this->readRawText($tagName);
+				array_unshift($this->peek, $rawText);
 			}
 		} else {
 			$t = $this->read_text();
@@ -141,24 +144,6 @@ class tokstream
 		if (!$t) return null;
 		$t->pos = $pos;
 		return $t;
-	}
-
-	/*
-	 * If this tag starts a raw text container, returns the tag name.
-	 * Otherwise returns null.
-	 */
-	private function isRawTextContainer(token $t)
-	{
-		$rawElements = ['script', 'style'];
-		foreach ($rawElements as $name) {
-			$len = strlen($name) + 1;
-			$start = substr($t->content, 0, $len);
-			$nextChar = substr($t->content, $len, 1);
-			if (strtolower($start) == "<$name" && ($nextChar == '>' || ctype_space($nextChar))) {
-				return $name;
-			}
-		}
-		return null;
 	}
 
 	/*
@@ -238,16 +223,92 @@ class tokstream
 
 	private function read_tag()
 	{
-		$s = $this->buf->get();
-		assert($s == '<');
-		while ($this->buf->more()) {
-			$ch = $this->buf->get();
-			$s .= $ch;
-			if ($ch == '>') {
-				return new token(token::TAG, $s);
+		$this->buf->expect('<');
+		$s = $this->buf;
+
+		// Read tag name.
+		$tagName = $s->get();
+		if (!$tagName || (strpos(self::alpha, $tagName) === false && $tagName != '/')) {
+			return $this->error("Tag name expected, got '$tagName'", $s->pos());
+		}
+		$tagName .= $s->read_set(self::alpha . self::num . ':');
+
+		// Read the attributes.
+		$attrs = [];
+		while (true) {
+			$s->read_set(self::spaces);
+
+			// Read attribute name. If no name, stop.
+			$attrName = $s->read_set(self::alpha . '-_0123456789:');
+			if (!$attrName) {
+				break;
+			}
+
+			// If '=' follows, read the value.
+			// If not, treat the attribute as a boolean.
+			if ($s->peekget('=')) {
+				$val = $this->readAttributeValue();
+				$attrs[$attrName] = $val;
+			} else {
+				$attrs[$attrName] = true;
 			}
 		}
-		return $this->error("Missing '>'");
+
+		// Skip optional XML-style ending.
+		if ($s->peek() == '/') {
+			$s->get();
+		}
+
+		// Skip some crap.
+		$crap = '';
+		while ($s->more() && $s->peek() != '>') {
+			$crap .= $s->get();
+		}
+		if ($crap) {
+			$this->warning("skipped crap: $crap");
+		}
+
+		$ch = $s->get();
+		if ($ch != '>') {
+			return $this->error("'>' expected, got '$ch'", $s->pos());
+		}
+
+		return new token(token::TAG, [$tagName, $attrs]);
+	}
+
+	/**
+	 * Reads attribute value.
+	 */
+	private function readAttributeValue()
+	{
+		$s = $this->buf;
+
+		// If a quote character follows, read the happy standard case.
+		if ($s->peek() == '"') {
+			$s->get();
+			$val = $s->skip_until('"');
+			if ($s->get() != '"') {
+				return $this->error("'\"' expected", $s->pos());
+			}
+			return html_entity_decode($val);
+		}
+
+		// If no quotes, try reading a value without them.
+		if ($s->peek() == '_' || ctype_alnum($s->peek())) {
+			return html_entity_decode($s->read_set(self::alpha . self::num));
+		}
+
+		// Try reading a value in single quotes.
+		if ($s->peek() == "'") {
+			$s->get();
+			$val = $s->skip_until("'");
+			if ($s->get() != "'") {
+				return $this->error("''' expected", $s->pos());
+			}
+			return html_entity_decode($val);
+		}
+
+		return $this->error("Unexpected character: " . $s->peek(), $s->pos());
 	}
 
 	private function read_text()

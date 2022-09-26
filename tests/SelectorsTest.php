@@ -115,7 +115,7 @@ class SelectorsTest extends TestCase
     {
         $html = '<section><p class="mark">1</p><h1>One</h1></section>
             <section><p class="mark">2</p><h1>Two</h1></section>';
-        $doc = (new Parser)->parse($html);
+        $doc = Parser::parse($html);
         $hh = $doc->querySelectorAll('p.mark + h1');
         $this->assertCount(2, $hh);
         $this->assertEquals('One', $hh[0]->innerHTML());

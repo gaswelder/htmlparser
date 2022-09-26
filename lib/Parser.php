@@ -35,8 +35,13 @@ class Parser
 		}
 
 		// Discard invalid nodes at the top level.
-		while ($tokens->more() && $tokens->peek()->isClosingTag()) {
-			$tokens->get();
+		while ($tokens->more()) {
+			$t = $tokens->peek();
+			if ($t->type == token::TAG && $t->content[0][0] == '/') {
+				$tokens->get();
+			} else {
+				break;
+			}
 		}
 
 		self::parseContents($tokens, $doc, []);
@@ -80,7 +85,6 @@ class Parser
 		}
 
 		$token = $tokens->get();
-
 		if ($token->type == token::TEXT) {
 			return new TextNode($token->content);
 		}
@@ -91,28 +95,27 @@ class Parser
 			throw new ParsingException("Unexpected token: $token at $token->pos");
 		}
 
-		if ($parent instanceof ElementNode) {
-			// Normal closing tag as expected.
-			if ($token->isClosingTag($parent->tagName)) {
-				return null;
-			}
+		if ($token->content[0][0] == '/') {
+			$tagNameLC = strtolower(substr($token->content[0], 1));
 
-			// Auto-close 'p'
-			if ($token->isClosingTag() && strtolower($parent->tagName) == 'p') {
-				$tokens->unget($token);
-				return null;
+			if ($parent instanceof ElementNode) {
+				// Normal closing tag as expected.
+				if (strtolower($parent->tagName) == $tagNameLC) {
+					return null;
+				}
+				// Auto-close 'p'
+				if (strtolower($parent->tagName) == 'p') {
+					$tokens->unget($token);
+					return null;
+				}
 			}
-		}
-
-		if ($token->isClosingTag()) {
-			$n = strtolower($token->_closingTagName());
 
 			// This is a tag that closes something else than the current container.
 			// If there's a matching opening ancestor tag, assume it closes that
 			// ancestor and therefore the current container also.
 			$hasAncestor = false;
 			foreach ($ancestors as $p) {
-				if ($p instanceof ElementNode && strtolower($p->tagName) == $n) {
+				if ($p instanceof ElementNode && strtolower($p->tagName) == $tagNameLC) {
 					$hasAncestor = true;
 					break;
 				}
@@ -126,7 +129,12 @@ class Parser
 			return self::parseNode($tokens, $parent, $ancestors);
 		}
 
-		$node = (new tagparser())->parse($token);
+		$tagName = $token->content[0];
+		$attrs = $token->content[1];
+		$node = new ElementNode($tagName);
+		foreach ($attrs as $k => $v) {
+			$node->setAttribute($k, $v);
+		}
 		if ($node->_isVoid()) {
 			return $node;
 		}
