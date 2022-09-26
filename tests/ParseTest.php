@@ -93,4 +93,11 @@ class ParseTest extends TestCase
 		}
 		$this->assertEquals(['p', 'SCRIpt', 'p'], $tags);
 	}
+
+	function testDataAttr()
+	{
+		$doc = Parser::parse('<p data-foo-bar="123"></p>');
+		$p = $doc->querySelector('p');
+		$this->assertEquals('123', $p->getAttribute("data-foo-bar"));
+	}
 }
