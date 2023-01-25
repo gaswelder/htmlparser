@@ -5,7 +5,7 @@ namespace gaswelder\htmlparser\dom;
 /**
  * Collection of DOM nodes.
  */
-class NodeList implements \ArrayAccess, \Iterator
+class NodeList implements \ArrayAccess, \Iterator, \Countable
 {
 	public $length;
 	private $items = array();
@@ -34,6 +34,11 @@ class NodeList implements \ArrayAccess, \Iterator
 		return $this->items[$i];
 	}
 
+	function count()
+	{
+		return $this->length;
+	}
+
 	function offsetExists($i)
 	{
 		return isset($this->items[$i]);
@@ -54,23 +59,28 @@ class NodeList implements \ArrayAccess, \Iterator
 		trigger_error("Can't mess with collections");
 	}
 
-	function current() {
+	function current()
+	{
 		return $this->items[$this->cursor];
 	}
 
-	function key() {
+	function key()
+	{
 		return $this->cursor;
 	}
 
-	function next() {
+	function next()
+	{
 		$this->cursor++;
 	}
 
-	function rewind() {
+	function rewind()
+	{
 		$this->cursor = 0;
 	}
 
-	function valid() {
+	function valid()
+	{
 		return isset($this->items[$this->cursor]);
 	}
 }
