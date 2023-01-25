@@ -244,9 +244,11 @@ class tokstream
 				break;
 			}
 
+			$s->read_set(self::spaces);
 			// If '=' follows, read the value.
 			// If not, treat the attribute as a boolean.
 			if ($s->peekget('=')) {
+				$s->read_set(self::spaces);
 				$val = $this->readAttributeValue();
 				$attrs[$attrName] = $val;
 			} else {

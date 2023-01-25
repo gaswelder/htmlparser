@@ -86,4 +86,10 @@ class ToleranceTest extends TestCase
         $doc = Parser::parse('<p><%abc%></p>');
         $this->assertEquals('', $doc->querySelector('p')->innerHTML());
     }
+
+    function testSpaceAfterEqual()
+    {
+        $doc = Parser::parse("<a href= 'http://foo'>foo</a>");
+        $this->assertEquals('http://foo', $doc->querySelector('a')->getAttribute('href'));
+    }
 }
