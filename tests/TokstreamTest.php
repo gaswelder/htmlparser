@@ -1,7 +1,6 @@
 <?php
 
 use gaswelder\htmlparser\tokstream;
-use PHPUnit\Framework\TestCase;
 
 require __DIR__ . '/../init.php';
 

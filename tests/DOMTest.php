@@ -2,7 +2,6 @@
 
 use gaswelder\htmlparser\dom\ElementNode;
 use gaswelder\htmlparser\dom\TextNode;
-use PHPUnit\Framework\TestCase;
 use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
