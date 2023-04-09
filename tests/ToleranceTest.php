@@ -44,13 +44,14 @@ class ToleranceTest extends TestCase
 
     function testUnquoted()
     {
-        $html = '<BODY FOO=0 BAR=bar target=_blank></BODY>';
+        $html = '<BODY FOO=0 BAR=bar target=_blank color=#333333></BODY>';
         $p = new Parser();
         $doc = $p->parse($html);
         $body = $doc->querySelector('body');
 
         $this->assertEquals('0', $body->getAttribute('FOO'));
         $this->assertEquals('bar', $body->getAttribute('BAR'));
+        $this->assertEquals('#333333', $body->getAttribute('color'));
     }
 
     function testInvalidClosingTags()
@@ -91,5 +92,11 @@ class ToleranceTest extends TestCase
     {
         $doc = Parser::parse("<a href= 'http://foo'>foo</a>");
         $this->assertEquals('http://foo', $doc->querySelector('a')->getAttribute('href'));
+    }
+
+    function testNonTag()
+    {
+        $doc = Parser::parse("<b>A <->B</-></b>");
+        $this->assertEquals("A <->B</->", $doc->querySelector('b')->innerHTML());
     }
 }

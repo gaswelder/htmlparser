@@ -227,11 +227,11 @@ class tokstream
 		$s = $this->buf;
 
 		// Read tag name.
-		$tagName = $s->get();
-		if (!$tagName || (strpos(self::alpha, $tagName) === false && $tagName != '/')) {
-			return $this->error("Tag name expected, got '$tagName'", $s->pos());
+		// Read whatever is there, don't validate.
+		$tagName = $s->read_set(self::alpha . self::num . ':-/');
+		if ($tagName === '') {
+			return $this->error("Tag name expected, got '$tagName' at " . $s->pos());
 		}
-		$tagName .= $s->read_set(self::alpha . self::num . ':');
 
 		// Read the attributes.
 		$attrs = [];
@@ -279,7 +279,7 @@ class tokstream
 	}
 
 	/**
-	 * Reads attribute value.
+	 * Reads attribute value, what follows after a "attr=".
 	 */
 	private function readAttributeValue()
 	{
@@ -295,11 +295,6 @@ class tokstream
 			return html_entity_decode($val);
 		}
 
-		// If no quotes, try reading a value without them.
-		if ($s->peek() == '_' || ctype_alnum($s->peek())) {
-			return html_entity_decode($s->read_set(self::alpha . self::num));
-		}
-
 		// Try reading a value in single quotes.
 		if ($s->peek() == "'") {
 			$s->get();
@@ -310,7 +305,12 @@ class tokstream
 			return html_entity_decode($val);
 		}
 
-		return $this->error("Unexpected character: " . $s->peek(), $s->pos());
+		// If no quotes, try reading a value without them.
+		$val = $s->read_set(self::alpha . self::num . '#_');
+		if ($val === '') {
+			return $this->error("Couldn't get attribute value: " . $s->peek() . " at " . $s->pos());
+		}
+		return html_entity_decode($val);
 	}
 
 	private function read_text()
