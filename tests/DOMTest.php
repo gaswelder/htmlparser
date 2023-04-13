@@ -27,4 +27,11 @@ class DOMTest extends TestCase
 		$val = $doc->querySelector('a')->getAttribute('val');
 		$this->assertEquals($val, "isn't");
 	}
+
+	function testEscapedText()
+	{
+		$doc = Parser::parse('<body>isn&#039;t</body>');
+		$val = $doc->firstChild->firstChild->textContent;
+		$this->assertEquals($val, "isn't");
+	}
 }
