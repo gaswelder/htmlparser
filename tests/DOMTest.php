@@ -20,4 +20,11 @@ class DOMTest extends TestCase
 		$this->assertInstanceOf(ElementNode::class, $nextElement);
 		$this->assertEquals('i', $nextElement->tagName);
 	}
+
+	function testEscapedAttributeValues()
+	{
+		$doc = Parser::parse('<body><a val="isn&#039;t"></a></body>');
+		$val = $doc->querySelector('a')->getAttribute('val');
+		$this->assertEquals($val, "isn't");
+	}
 }
