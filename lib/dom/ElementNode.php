@@ -2,8 +2,6 @@
 
 namespace gaswelder\htmlparser\dom;
 
-use gaswelder\htmlparser\Parser;
-
 class Attr
 {
 	public $name;
