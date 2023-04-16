@@ -306,7 +306,7 @@ class tokstream
 		}
 
 		// If no quotes, try reading a value without them.
-		$val = $s->read_set(self::alpha . self::num . '#_');
+		$val = $s->read_set(self::alpha . self::num . '#_+-');
 		if ($val === '') {
 			return $this->error("Couldn't get attribute value: " . $s->peek() . " at " . $s->pos());
 		}

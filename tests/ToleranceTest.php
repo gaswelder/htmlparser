@@ -44,11 +44,12 @@ class ToleranceTest extends TestCase
 
     function testUnquoted()
     {
-        $html = '<BODY FOO=0 BAR=bar target=_blank color=#333333></BODY>';
+        $html = '<BODY size=+2 FOO=0 BAR=bar target=_blank color=#333333></BODY>';
         $p = new Parser();
         $doc = $p->parse($html);
         $body = $doc->querySelector('body');
 
+        $this->assertEquals('+2', $body->getAttribute('size'));
         $this->assertEquals('0', $body->getAttribute('FOO'));
         $this->assertEquals('bar', $body->getAttribute('BAR'));
         $this->assertEquals('#333333', $body->getAttribute('color'));
