@@ -107,6 +107,14 @@ class ElementNode extends ContainerNode
 		return $this->attributes[$i]->value;
 	}
 
+	function removeAttribute(string $k)
+	{
+		$i = $this->findAttr($k);
+		if ($i >= 0) {
+			array_splice($this->attributes, $i, 1);
+		}
+	}
+
 	private static $voidElements = [
 		'area',
 		'base',
