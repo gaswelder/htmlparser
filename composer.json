@@ -9,6 +9,6 @@
     }
   },
   "scripts": {
-    "test": "php test.php"
+    "test": "php test.php tests/*.php"
   }
 }
