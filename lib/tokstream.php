@@ -110,37 +110,62 @@ class tokstream
 			return null;
 		}
 
-		$pos = $this->buf->pos();
-		$t = null;
+		$buf = $this->buf;
+		$pos = $buf->pos();
 
-		if ($this->buf->literal_follows('<!DOCTYPE')) {
+		if ($buf->literal_follows('<!DOCTYPE')) {
 			$t = $this->read_doctype();
-		} else if ($this->buf->literal_follows('<!--')) {
+			if (!$t) return null;
+			$t->pos = $pos;
+			return $t;
+		}
+
+		if ($buf->literal_follows('<!--')) {
 			$t = $this->read_comment();
+			if (!$t) return null;
+			$t->pos = $pos;
+			return $t;
 		}
+
 		// Invalid XML declarations.
-		else if ($this->buf->literal_follows('<?xml')) {
+		if ($this->buf->literal_follows('<?xml')) {
 			$t = $this->read_xml_declaration();
+			if (!$t) return null;
+			$t->pos = $pos;
+			return $t;
 		}
+
 		// Invalid ASP tags, discard
-		else if ($this->buf->literal_follows('<%')) {
+		if ($buf->literal_follows('<%')) {
 			$this->discard_asp_tag();
 			return $this->read();
 		}
-		// If this tag starts a container for another language (like JS or CSS)
-		// ("raw text container"), read the raw text.
-		else if ($this->buf->peek() == '<') {
+
+		// Is it a tag?
+		if ($buf->peek() == '<') {
 			$t = $this->read_tag();
+
+			// If it wasn't recognized as tag, then treat is as text.
+			if (!$t) {
+				$t = new token(token::TEXT, $buf->get());
+				$t->pos = $pos;
+				return $t;
+			}
+
+			// If this tag starts a container for another language (like JS or CSS)
+			// ("raw text container"), read the raw text.
 			$tagName = $t->content[0];
 			$tagNameLC = strtolower($tagName);
 			if ($tagNameLC == 'style' || $tagNameLC == 'script') {
 				$rawText = $this->readRawText($tagName);
 				array_unshift($this->peek, $rawText);
 			}
-		} else {
-			$t = $this->read_text();
+			$t->pos = $pos;
+			return $t;
 		}
 
+		// Must be text then.
+		$t = $this->read_text();
 		if (!$t) return null;
 		$t->pos = $pos;
 		return $t;
@@ -223,14 +248,21 @@ class tokstream
 
 	private function read_tag()
 	{
-		$this->buf->expect('<');
 		$s = $this->buf;
+		if ($s->peek() != '<') {
+			return null;
+		}
+		$s->get();
 
 		// Read tag name.
 		// Read whatever is there, don't validate.
 		$tagName = $s->read_set(self::alpha . self::num . ':-/');
 		if ($tagName === '') {
-			return $this->error("Tag name expected, got '$tagName' at " . $s->pos());
+			// If couldn't read a tag name, assume it was an unescaped angle
+			// bracket ("<" instead of &lt;), put it back and let the main
+			// parser read it as text.
+			$s->unget('<');
+			return null;
 		}
 
 		// Read the attributes.

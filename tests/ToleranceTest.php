@@ -100,4 +100,16 @@ class ToleranceTest extends TestCase
         $doc = Parser::parse("<b>A <->B</-></b>");
         $this->assertEquals("A <->B</->", $doc->querySelector('b')->innerHTML());
     }
+
+    function testNonTag1()
+    {
+        $doc = Parser::parse('<div>< just a bracket</div>');
+        $text = '';
+        $ch = $doc->querySelector('div')->firstChild;
+        while ($ch) {
+            $text .= $ch->textContent;
+            $ch = $ch->nextSibling();
+        }
+        $this->assertEquals('< just a bracket', $text);
+    }
 }
