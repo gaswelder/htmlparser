@@ -44,27 +44,27 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 		return isset($this->items[$i]);
 	}
 
-	function offsetGet($i): mixed
+	function offsetGet($i)
 	{
 		return $this->item($i);
 	}
 
-	function offsetSet(mixed $i, mixed $v): void
+	function offsetSet($i, $v): void
 	{
 		trigger_error("Can't mess with collections");
 	}
 
-	function offsetUnset(mixed $i): void
+	function offsetUnset($i): void
 	{
 		trigger_error("Can't mess with collections");
 	}
 
-	function current(): mixed
+	function current()
 	{
 		return $this->items[$this->cursor];
 	}
 
-	function key(): mixed
+	function key()
 	{
 		return $this->cursor;
 	}
