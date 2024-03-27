@@ -79,7 +79,7 @@ function runFile($path, $testPatterns)
 	$skipped = 0;
 	$newClasses = loadFile($path);
 	foreach ($newClasses as $cn) {
-		if (!str_ends_with($cn, "Test")) {
+		if (!preg_match('/Test$/', $cn)) {
 			continue;
 		}
 		$test = new $cn();
@@ -95,7 +95,7 @@ function runFile($path, $testPatterns)
 				call_user_func_array([$test, $name], []);
 				echo "OK $name\n";
 				$ok++;
-			} catch (AssertException) {
+			} catch (AssertException $e) {
 				echo "FAIL $name\n";
 				$fails++;
 			}
