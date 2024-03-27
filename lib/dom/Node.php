@@ -44,7 +44,7 @@ abstract class Node
 			array_splice($p->children, $pos, 1);
 		}
 
-		if ($p->firstChild == $this) {
+		if ($p->firstChild === $this) {
 			if (!empty($p->childNodes)) {
 				$p->firstChild = $p->childNodes[0];
 			} else {
