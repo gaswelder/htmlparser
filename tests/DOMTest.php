@@ -34,4 +34,13 @@ class DOMTest extends TestCase
 		$val = $doc->firstChild->firstChild->textContent;
 		$this->assertEquals($val, "isn't");
 	}
+
+	function testRemoveAttribute()
+	{
+		$doc = Parser::parse('<img src="one" srcset="two" sizes="three">');
+		$img = $doc->querySelector('img');
+		$img->removeAttribute('srcset');
+		$img->removeAttribute('sizes');
+		$this->assertEquals(trim($doc->format()), '<img src="one">');
+	}
 }

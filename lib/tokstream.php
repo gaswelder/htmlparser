@@ -324,7 +324,7 @@ class tokstream
 			if ($s->get() != '"') {
 				return $this->error("'\"' expected", $s->pos());
 			}
-			return html_entity_decode($val);
+			return html_entity_decode($val, ENT_QUOTES, "UTF-8");
 		}
 
 		// Try reading a value in single quotes.
@@ -334,7 +334,7 @@ class tokstream
 			if ($s->get() != "'") {
 				return $this->error("''' expected", $s->pos());
 			}
-			return html_entity_decode($val);
+			return html_entity_decode($val, ENT_QUOTES, "UTF-8");
 		}
 
 		// If no quotes, try reading a value without them.
@@ -342,7 +342,7 @@ class tokstream
 		if ($val === '') {
 			return $this->error("Couldn't get attribute value: " . $s->peek() . " at " . $s->pos());
 		}
-		return html_entity_decode($val);
+		return html_entity_decode($val, ENT_QUOTES, "UTF-8");
 	}
 
 	private function read_text()
@@ -389,7 +389,7 @@ class tokstream
 			$this->warning("';' expected");
 		}
 		$s .= ';';
-		return html_entity_decode($s);
+		return html_entity_decode($s, ENT_QUOTES, "UTF-8");
 	}
 
 	/**

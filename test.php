@@ -9,8 +9,8 @@ class TestCase
 	function assertEquals($actual, $expected)
 	{
 		if ($actual !== $expected) {
-			echo "expected: $expected\n";
-			echo "actual:   $actual\n";
+			echo "expected: \"$expected\"\n";
+			echo "actual:   \"$actual\"\n";
 			throw new AssertException();
 		}
 	}
