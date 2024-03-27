@@ -1,0 +1,25 @@
+#!/usr/bin/php
+<?php
+
+require __DIR__ . '/../init.php';
+
+use \gaswelder\htmlparser\Parser;
+
+$selector = '';
+
+array_shift($argv);
+$selector = array_shift($argv);
+if (!$selector) {
+    fprintf(STDERR, "usage: htmlcut <selector> <filepath> ...\n");
+    exit(1);
+}
+
+foreach ($argv as $arg) {
+    echo $arg, "\n";
+    $doc = Parser::parse(file_get_contents($arg));
+    foreach ($doc->querySelectorAll($selector) as $e) {
+        $e->remove();
+    }
+    $s = $doc->format();
+    file_put_contents($arg, $s);
+}
