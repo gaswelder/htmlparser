@@ -18,10 +18,12 @@ class DocumentNode extends ContainerNode
 
 	function format()
 	{
-		$s = '<!DOCTYPE ' . $this->type . ">";
+		$s = '';
 		foreach ($this->childNodes as $node) {
 			$s .= $node->format() . "\n";
 		}
+		$s = preg_replace('/[ \t]+\n/', "\n", $s);
+		$s = preg_replace('/\n{3,}/', "\n\n", $s);
 		return $s;
 	}
 
