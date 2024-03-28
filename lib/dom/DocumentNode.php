@@ -19,11 +19,17 @@ class DocumentNode extends ContainerNode
 	function format()
 	{
 		$s = '';
+		$prevBlock = false;
 		foreach ($this->childNodes as $node) {
-			$s .= $node->format() . "\n";
+			$isBlock = $node instanceof ElementNode && $node->_isBlock();
+			if ($isBlock && $prevBlock) {
+				$s .= "\n\n";
+			}
+			$s .= $node->format();
+			$prevBlock = $isBlock;
 		}
-		$s = preg_replace('/[ \t]+\n/', "\n", $s);
-		$s = preg_replace('/\n{3,}/', "\n\n", $s);
+		// $s = preg_replace('/[ \t]+\n/', "\n", $s);
+		// $s = preg_replace('/\n{3,}/', "\n\n", $s);
 		return $s;
 	}
 

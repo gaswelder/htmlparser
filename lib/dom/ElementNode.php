@@ -58,23 +58,41 @@ class ElementNode extends ContainerNode
 
 	function format()
 	{
-		$s = '<' . $this->tagName;
+		$open = '<' . $this->tagName;
 		foreach ($this->attributes as $attr) {
-			$s .= ' ' . $attr->format();
+			$open .= ' ' . $attr->format();
 		}
 		if ($this->_isVoid()) {
-			$s .= '>';
-			return $s;
+			$open .= '>';
+			return $open;
 		}
-		$s .= '>';
+		$open .= '>';
+
+		$inner = '';
 		foreach ($this->childNodes as $node) {
-			$s .= $node->format();
+			$inner .= $node->format();
 		}
-		$s .= '</' . $this->tagName . '>';
-		if ($this->_isBlock()) {
-			$s .= "\n";
+
+		$close = '</' . $this->tagName . '>';
+		// if ($this->_isBlock()) {
+		// 	$close .= "\n";
+		// }
+
+		$startsWithText = false;
+		foreach ($this->childNodes as $node) {
+			if ($node instanceof TextNode) {
+				$startsWithText = true;
+				break;
+			}
+			if ($node instanceof ElementNode) {
+				$startsWithText = !$node->_isBlock();
+				break;
+			}
 		}
-		return $s;
+		if ($startsWithText) {
+			return $open . $inner . $close;
+		}
+		return $open . "\n" . Util::indent($inner) . "\n" . $close;
 	}
 
 	private function findAttr($name)

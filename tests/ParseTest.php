@@ -71,13 +71,13 @@ class ParseTest extends TestCase
 		$table = [
 			['<p>a<p>b', "<p>a</p>\n\n<p>b</p>"],
 			['<p>a<div>b</div>', "<p>a</p>\n\n<div>b</div>"],
-			['<td><p>hoho</td>', "<td><p>hoho</p>\n</td>"]
+			['<td><p>hoho</td>', "<td>\n<p>hoho</p>\n</td>"]
 		];
 
 		foreach ($table as $case) {
 			[$html, $fmt] = $case;
 			$f = trim(Parser::parse($html)->format());
-			$this->assertEquals($fmt, $f);
+			$this->assertEquals($f, $fmt);
 		}
 	}
 
