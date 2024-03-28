@@ -71,6 +71,9 @@ class ElementNode extends ContainerNode
 			$s .= $node->format();
 		}
 		$s .= '</' . $this->tagName . '>';
+		if ($this->_isBlock()) {
+			$s .= "\n";
+		}
 		return $s;
 	}
 

@@ -69,9 +69,9 @@ class ParseTest extends TestCase
 	function testAutoclosing()
 	{
 		$table = [
-			['<p>a<p>b', "<p>a</p>\n<p>b</p>"],
-			['<p>a<div>b</div>', "<p>a</p>\n<div>b</div>"],
-			['<td><p>hoho</td>', '<td><p>hoho</p></td>']
+			['<p>a<p>b', "<p>a</p>\n\n<p>b</p>"],
+			['<p>a<div>b</div>', "<p>a</p>\n\n<div>b</div>"],
+			['<td><p>hoho</td>', "<td><p>hoho</p>\n</td>"]
 		];
 
 		foreach ($table as $case) {
