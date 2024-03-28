@@ -15,11 +15,15 @@ if (!$selector) {
 }
 
 foreach ($argv as $arg) {
-    echo $arg, "\n";
     $doc = Parser::parse(file_get_contents($arg));
+    $n = 0;
     foreach ($doc->querySelectorAll($selector) as $e) {
         $e->remove();
+        $n++;
     }
-    $s = $doc->format();
-    file_put_contents($arg, $s);
+    if ($n > 0) {
+        echo $arg, "\n";
+        $s = $doc->format();
+        file_put_contents($arg, $s);
+    }
 }
