@@ -3,7 +3,7 @@
 namespace gaswelder\htmlparser\dom;
 
 /**
- * Collection of DOM nodes.
+ * A collection of DOM nodes.
  */
 class NodeList implements \ArrayAccess, \Iterator, \Countable
 {
@@ -44,7 +44,7 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 		return isset($this->items[$i]);
 	}
 
-	function offsetGet($i)
+	function offsetGet($i): mixed
 	{
 		return $this->item($i);
 	}
@@ -59,12 +59,12 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 		trigger_error("Can't mess with collections");
 	}
 
-	function current()
+	function current(): mixed
 	{
 		return $this->items[$this->cursor];
 	}
 
-	function key()
+	function key(): mixed
 	{
 		return $this->cursor;
 	}
