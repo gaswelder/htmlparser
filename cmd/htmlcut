@@ -5,17 +5,45 @@ require __DIR__ . '/../init.php';
 
 use \gaswelder\htmlparser\Parser;
 
+// Script path.
+array_shift($argv);
+
+define('USAGE', "usage: htmlcut [-i] <selector> <filepath> ...");
+$invert = false;
 $selector = '';
 
-array_shift($argv);
+while (count($argv) > 0 && $argv[0][0] == '-') {
+    if ($argv[0] == '-i') {
+        $invert = true;
+        array_shift($argv);
+    } else if ($argv[0] == "-h") {
+        printf(USAGE . "\n");
+        printf("\t-k\tinvert selection: keep matches, remove rest\n");
+        exit(0);
+    } else {
+        fprintf(STDERR, "unknown flag: $argv[0]\n");
+        exit(1);
+    }
+}
+
 $selector = array_shift($argv);
 if (!$selector) {
-    fprintf(STDERR, "usage: htmlcut <selector> <filepath> ...\n");
+    fprintf(STDERR, USAGE . "\n");
     exit(1);
 }
 
 foreach ($argv as $arg) {
     $doc = Parser::parse(file_get_contents($arg));
+    if ($invert) {
+        $n = $doc->querySelector($selector);
+        if ($n == NULL) {
+            continue;
+        }
+        echo $arg, "\n";
+        file_put_contents($arg, $n->innerHTML());
+        continue;
+    }
+
     $n = 0;
     foreach ($doc->querySelectorAll($selector) as $e) {
         $e->remove();
