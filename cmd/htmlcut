@@ -33,7 +33,12 @@ if (!$selector) {
 }
 
 foreach ($argv as $arg) {
-    $doc = Parser::parse(file_get_contents($arg));
+    try {
+        $doc = Parser::parse(file_get_contents($arg));
+    } catch (Exception $e) {
+        echo "$arg: " . $e->getMessage();
+        continue;
+    }
     if ($invert) {
         $n = $doc->querySelector($selector);
         if ($n == NULL) {
