@@ -95,10 +95,11 @@ class ElementNode extends ContainerNode
 		return $open . "\n" . Util::indent($inner) . "\n" . $close;
 	}
 
-	private function findAttr($name)
+	private function findAttr(string $name)
 	{
+		$namelow = strtolower($name);
 		foreach ($this->attributes as $i => $attr) {
-			if ($attr->name == $name) {
+			if (strtolower($attr->name) == $namelow) {
 				return $i;
 			}
 		}
@@ -119,7 +120,7 @@ class ElementNode extends ContainerNode
 		}
 	}
 
-	function getAttribute($k)
+	function getAttribute(string $k)
 	{
 		$i = $this->findAttr($k);
 		if ($i < 0) {

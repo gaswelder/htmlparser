@@ -43,4 +43,11 @@ class DOMTest extends TestCase
 		$img->removeAttribute('sizes');
 		$this->assertEquals(trim($doc->format()), '<img src="one">');
 	}
+
+	function testGetAttribute()
+	{
+		$doc = Parser::parse('<img SRC="one">');
+		$img = $doc->querySelector('img');
+		$this->assertEquals($img->getAttribute("src"), "one");
+	}
 }
