@@ -1,8 +1,6 @@
 <?php
 
-class AssertException extends Exception
-{
-}
+class AssertException extends Exception {}
 
 class TestCase
 {
@@ -35,8 +33,7 @@ class TestCase
 	{
 		$m = count($list);
 		if ($m != $n) {
-			$e = var_export($list);
-			echo "expected count of '$e' to be $n, got $m\n";
+			echo "expected count of '$list' to be $n, got $m\n";
 			throw new AssertException();
 		}
 	}

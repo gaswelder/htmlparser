@@ -36,8 +36,8 @@ class token
 		}
 
 		$n = 40;
-		if (mb_strlen($content) > $n) {
-			$c = mb_substr($content, 0, $n - 3) . '...';
+		if (strlen($content) > $n) {
+			$c = substr($content, 0, $n - 3) . '...';
 		} else $c = $content;
 		$c = str_replace(array("\r", "\n", "\t"), array(
 			"\\r",
