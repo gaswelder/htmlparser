@@ -317,31 +317,21 @@ class tokstream
 	{
 		$s = $this->buf;
 
-		// If a quote character follows, read the happy standard case.
-		if ($s->peek() == '"') {
-			$s->get();
-			$val = $s->skip_until('"');
-			if ($s->get() != '"') {
-				return $this->error("'\"' expected", $s->pos());
-			}
-			return html_entity_decode($val, ENT_QUOTES, "UTF-8");
+		$q = '';
+		if ($s->peek() == '"' || $s->peek() == '\'') {
+			$q = $s->peek();
 		}
-
-		// Try reading a value in single quotes.
-		if ($s->peek() == "'") {
+		if ($q) {
 			$s->get();
-			$val = $s->skip_until("'");
-			if ($s->get() != "'") {
-				return $this->error("''' expected", $s->pos());
+			$val = $s->skip_until($q);
+			if ($s->get() != $q) {
+				return $this->error("$q expected at " . $s->pos());
 			}
 			return html_entity_decode($val, ENT_QUOTES, "UTF-8");
 		}
 
 		// If no quotes, try reading a value without them.
 		$val = $s->read_set(self::alpha . self::num . '#_+-');
-		if ($val === '') {
-			return $this->error("Couldn't get attribute value: " . $s->peek() . " at " . $s->pos());
-		}
 		return html_entity_decode($val, ENT_QUOTES, "UTF-8");
 	}
 

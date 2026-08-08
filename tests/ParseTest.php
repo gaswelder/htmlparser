@@ -105,4 +105,11 @@ class ParseTest extends TestCase
 		$p = $doc->querySelector('p');
 		$this->assertEquals('123', $p->getAttribute("data-foo-bar"));
 	}
+
+	function testEmptyAttr()
+	{
+		$doc = Parser::parse('<p align=></p>');
+		$p = $doc->querySelector('p');
+		$this->assertEquals('', $p->getAttribute("align"));
+	}
 }
