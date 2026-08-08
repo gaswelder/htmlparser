@@ -2,16 +2,16 @@
 
 namespace gaswelder\htmlparser\css;
 
+use Exception;
 use gaswelder\htmlparser\dom\ElementNode;
 
 class ElementSelector
 {
-	public $tag = '';
+	public $tag = ''; // div
 	public $class = '';
 	public $id = '';
-
-	// Attribute specifiers
 	public $attrs = [];
+	public $pseudoclasses = []; // :empty
 
 	/**
 	 * Returns true if the given element matches this selector.
@@ -40,6 +40,18 @@ class ElementSelector
 		foreach ($this->attrs as $spec) {
 			if (!$spec->match($child)) {
 				return false;
+			}
+		}
+
+		foreach ($this->pseudoclasses as $c) {
+			switch ($c) {
+				case "empty":
+					if (count($child->childNodes) > 0) {
+						return false;
+					}
+					break;
+				default:
+					throw new Exception("unknown pseudo class: " . $c);
 			}
 		}
 

@@ -13,29 +13,23 @@ const IDCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-
 class SelectorParser
 {
 	/**
-	 * Parses a complete selectors group.
-	 *
-	 * A selectors group is a comma-separated sequence of selectors:
-	 * <group>: <selector>, <selector>, ...
+	 * Parses a complete selectors group: "<selector>, <selector>, ...".
 	 */
 	static function parse(string $s): SelectorsGroup
 	{
 		$selectors = [];
 		$sets = array_map('trim', explode(',', $s));
 		foreach ($sets as $set) {
-			$selectors[] = self::parseSet($set);
+			$selectors[] = self::readSet($set);
 		}
 		return new SelectorsGroup($selectors);
 	}
 
 	/**
-	 * Parses a "set specifier", which is almost the same as selector,
-	 * but only in single case, without commas.
-	 *
-	 * <set>: <elem> [<rel>] <elem> [<rel>] ...
+	 * Parses a "set specifier": <elem> [<rel>] <elem> [<rel>] ...
 	 * example: #myid > div ul.myclass
 	 */
-	private static function parseSet(string $s): Selector
+	private static function readSet(string $s): Selector
 	{
 		$s = trim($s);
 		if ($s === '') {
@@ -83,10 +77,11 @@ class SelectorParser
 	}
 
 	/*
-	 * Reads an "element specifier".
-	 * <elem>: [<tagname>] ["." <classname>] ["#" <id>]
-	 * 	[ "[" <attrname> ["=" <attvalue> ] "]" ]
-	 * example: ul.funk[type="disc"]
+	 * Reads an "element specifier":
+	 *
+	 * [<tagname>] ["." <classname>] ["#" <id>] [<attr>] [:<pseudo-class>] 
+	 *
+	 * example: ul.funk[type="disc"]:empty
 	 */
 	private static function readElementSpecifier(parsebuf $buf): ElementSelector
 	{
@@ -114,6 +109,12 @@ class SelectorParser
 		// Attribute selectors.
 		while ($s->peek() == '[') {
 			$spec->attrs[] = AttributeSelector::parse($s);
+		}
+
+		// Pseudo-classes
+		while ($s->peek() == ':') {
+			$s->get();
+			$spec->pseudoclasses[] = $s->read_set(IDCHARS);
 		}
 
 		return $spec;

@@ -120,4 +120,13 @@ class SelectorsTest extends TestCase
         $this->assertEquals('One', $hh[0]->innerHTML());
         $this->assertEquals('Two', $hh[1]->innerHTML());
     }
+
+    function testEmpty()
+    {
+        $html = '<p class="c1"> </p><p class="c2"></p>';
+        $doc = Parser::parse($html);
+        $pp = $doc->querySelectorAll('p:empty');
+        $this->assertCount(1, $pp);
+        $this->assertEquals('c2', $pp[0]->getAttribute('class'));
+    }
 }
