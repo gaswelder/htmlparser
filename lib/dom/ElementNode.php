@@ -78,7 +78,7 @@ class ElementNode extends ContainerNode
 		// Format closing tag.
 		$close = '</' . $this->tagName . '>';
 
-		$trim = ['TD', 'DIV', 'TR', 'TABLE', 'CENTER', 'P', 'A', 'UL', 'LI', 'OL', 'I', 'EM'];
+		$trim = ['TD', 'DIV', 'TR', 'TABLE', 'CENTER', 'P', 'A', 'UL', 'LI', 'OL', 'I', 'EM', 'SPAN', 'H2'];
 		if (in_array(strtoupper($this->tagName), $trim)) {
 			$inner = trim($inner);
 		}
