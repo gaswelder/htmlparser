@@ -58,6 +58,7 @@ class ElementNode extends ContainerNode
 
 	function format()
 	{
+		// Format open tag.
 		$open = '<' . $this->tagName;
 		foreach ($this->attributes as $attr) {
 			$open .= ' ' . $attr->format();
@@ -68,31 +69,37 @@ class ElementNode extends ContainerNode
 		}
 		$open .= '>';
 
+		// Format contents.
 		$inner = '';
 		foreach ($this->childNodes as $node) {
 			$inner .= $node->format();
 		}
 
+		// Format closing tag.
 		$close = '</' . $this->tagName . '>';
-		// if ($this->_isBlock()) {
-		// 	$close .= "\n";
-		// }
 
-		$startsWithText = false;
-		foreach ($this->childNodes as $node) {
-			if ($node instanceof TextNode) {
-				$startsWithText = true;
-				break;
-			}
-			if ($node instanceof ElementNode) {
-				$startsWithText = !$node->_isBlock();
-				break;
-			}
+		$trim = ['TD', 'DIV', 'TR', 'TABLE', 'CENTER', 'P', 'A', 'UL', 'LI', 'OL', 'I', 'EM'];
+		if (in_array(strtoupper($this->tagName), $trim)) {
+			$inner = trim($inner);
 		}
-		if ($startsWithText) {
+		if ($inner == '') {
+			return $open . $inner . $close;
+		}
+
+		// If we have <div>text</div>, format in one line.
+		if ($this->_contentStartsWithText()) {
 			return $open . $inner . $close;
 		}
 		return $open . "\n" . Util::indent($inner) . "\n" . $close;
+	}
+
+	private function _contentStartsWithText()
+	{
+		$node = $this->childNodes[0];
+		if ($node instanceof ElementNode) {
+			return !$node->_isBlock();
+		}
+		return $node instanceof TextNode;
 	}
 
 	private function findAttr(string $name)
