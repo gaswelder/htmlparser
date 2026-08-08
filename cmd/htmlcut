@@ -3,6 +3,7 @@
 
 require __DIR__ . '/../init.php';
 
+use gaswelder\htmlparser\dom\ElementNode;
 use \gaswelder\htmlparser\Parser;
 
 // Script path.
@@ -32,31 +33,64 @@ if (!$selector) {
     exit(1);
 }
 
-foreach ($argv as $arg) {
-    try {
-        $doc = Parser::parse(file_get_contents($arg));
-    } catch (Exception $e) {
-        echo "$arg: " . $e->getMessage();
-        continue;
+function forall(ElementNode $e, callable $f)
+{
+    $f($e);
+    foreach ($e->children as $c) {
+        forall($c, $f);
     }
-    if ($invert) {
+}
+
+if ($invert) {
+    foreach ($argv as $arg) {
+        try {
+            $doc = Parser::parse(file_get_contents($arg));
+        } catch (Exception $e) {
+            echo "$arg: " . $e->getMessage();
+            continue;
+        }
         $n = $doc->querySelector($selector);
         if ($n == NULL) {
             continue;
         }
         echo $arg, "\n";
         file_put_contents($arg, $n->innerHTML());
-        continue;
     }
+} else {
+    foreach ($argv as $arg) {
+        try {
+            $doc = Parser::parse(file_get_contents($arg));
+        } catch (Exception $e) {
+            echo "$arg: " . $e->getMessage();
+            continue;
+        }
+        $n = 0;
 
-    $n = 0;
-    foreach ($doc->querySelectorAll($selector) as $e) {
-        $e->remove();
-        $n++;
-    }
-    if ($n > 0) {
-        echo $arg, "\n";
-        $s = $doc->format();
-        file_put_contents($arg, $s);
+
+        $sels = explode(',', $selector);
+        foreach ($sels as $sel) {
+            if ($sel[0] == '@') {
+                $k = substr($sel, 1);
+                foreach ($doc->children as $c) {
+                    forall($c, function ($e) use ($k, &$n) {
+                        if ($e->getAttribute($k) !== null) {
+                            $e->removeAttribute($k);
+                            $n++;
+                        }
+                    });
+                }
+            } else {
+                foreach ($doc->querySelectorAll($sel) as $e) {
+                    $e->remove();
+                    $n++;
+                }
+            }
+        }
+
+        if ($n > 0) {
+            echo $arg, "\n";
+            $s = $doc->format();
+            file_put_contents($arg, $s);
+        }
     }
 }
