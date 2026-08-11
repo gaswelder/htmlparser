@@ -35,15 +35,6 @@ class ElementNode extends ContainerNode
 		$this->nodeType = self::ELEMENT_NODE;
 	}
 
-	// function setInnerHTML($html)
-	// {
-	// 	if ($this->_isVoid()) {
-	// 		throw new \Exception("Can't set inner HTML to a void node");
-	// 	}
-	// 	$doc = (new Parser)->parse($html);
-	// 	$this->childNodes = $doc->childNodes;
-	// }
-
 	function innerHTML()
 	{
 		if ($this->_isVoid()) {
@@ -69,37 +60,26 @@ class ElementNode extends ContainerNode
 		}
 		$open .= '>';
 
-		// Format contents.
-		$inner = '';
-		foreach ($this->childNodes as $node) {
-			$inner .= $node->format();
-		}
-
 		// Format closing tag.
 		$close = '</' . $this->tagName . '>';
 
-		$trim = ['TD', 'DIV', 'TR', 'TABLE', 'CENTER', 'P', 'A', 'UL', 'LI', 'OL', 'I', 'EM', 'SPAN', 'H2'];
-		if (in_array(strtoupper($this->tagName), $trim)) {
-			$inner = trim($inner);
+		// Format contents.
+		$inner = '';
+		$textOnly = true;
+		foreach ($this->childNodes as $node) {
+			if ($node instanceof ElementNode && !$node->_isInline()) {
+				$textOnly = false;
+			}
+			$inner .= trim($node->format()) . "\n";
+		}
+		$inner = trim($inner);
+		if ($textOnly) {
+			return $open . trim($inner) . $close;
 		}
 		if ($inner == '') {
-			return $open . $inner . $close;
-		}
-
-		// If we have <div>text</div>, format in one line.
-		if ($this->_contentStartsWithText()) {
-			return $open . $inner . $close;
+			return $open . $close;
 		}
 		return $open . "\n" . Util::indent($inner) . "\n" . $close;
-	}
-
-	private function _contentStartsWithText()
-	{
-		$node = $this->childNodes[0];
-		if ($node instanceof ElementNode) {
-			return !$node->_isBlock();
-		}
-		return $node instanceof TextNode;
 	}
 
 	private function findAttr(string $name)
@@ -212,6 +192,12 @@ class ElementNode extends ContainerNode
 	function _isBlock()
 	{
 		return in_array(strtolower($this->tagName), self::$blockElements);
+	}
+
+	function _isInline()
+	{
+		$inline = ['a', 'b', 'strong', 'em', 'i'];
+		return in_array(strtolower($this->tagName), $inline);
 	}
 
 	function __toString()

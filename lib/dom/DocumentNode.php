@@ -21,6 +21,9 @@ class DocumentNode extends ContainerNode
 		$s = '';
 		$prevBlock = false;
 		foreach ($this->childNodes as $node) {
+			if ($s == '' && $node instanceof TextNode) {
+				continue;
+			}
 			$isBlock = $node instanceof ElementNode && $node->_isBlock();
 			if ($isBlock && $prevBlock) {
 				$s .= "\n\n";
