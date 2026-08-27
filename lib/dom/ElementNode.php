@@ -77,7 +77,8 @@ class ElementNode extends ContainerNode
 		}
 		$inner = trim($inner);
 		if ($textOnly) {
-			return $open . trim($inner) . $close;
+			$inner = reflow(trim($inner));
+			return $open . $inner . $close;
 		}
 		if ($inner == '') {
 			return $open . $close;
@@ -221,4 +222,15 @@ class ElementNode extends ContainerNode
 		$s .= '>';
 		return $s;
 	}
+}
+
+function reflow(string $text)
+{
+	$words = preg_split('/\s+/', $text);
+	$chunks = array_chunk($words, 8);
+	$lines = [];
+	foreach ($chunks as $chunk) {
+		$lines[] = implode(' ', $chunk);
+	}
+	return implode("\n", $lines);
 }
