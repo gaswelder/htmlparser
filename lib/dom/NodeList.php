@@ -8,7 +8,7 @@ namespace gaswelder\htmlparser\dom;
 class NodeList implements \ArrayAccess, \Iterator, \Countable
 {
 	public $length;
-	private $items = array();
+	private $items = [];
 	private $cursor = 0;
 
 	function __construct($items)

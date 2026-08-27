@@ -19,7 +19,7 @@ class parsebuf
 	 */
 	private $line = 1;
 	private $col = 1;
-	private $linelengths = array();
+	private $linelengths = [];
 
 	function __construct($str, $pos = null)
 	{

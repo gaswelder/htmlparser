@@ -42,7 +42,7 @@ class SelectorsGroup
 	private function unique($results)
 	{
 		$set = call_user_func_array('array_merge', $results);
-		$u = array();
+		$u = [];
 		foreach ($set as $obj) {
 			if (!in_array($obj, $u, true)) {
 				$u[] = $obj;

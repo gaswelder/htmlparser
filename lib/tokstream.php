@@ -20,7 +20,7 @@ class tokstream
 	/*
 	 * Cache for tokens that have already been read.
 	 */
-	private $peek = array();
+	private $peek = [];
 
 	/**
 	 * @param string $htmlSource

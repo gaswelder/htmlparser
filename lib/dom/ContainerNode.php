@@ -10,18 +10,16 @@ use gaswelder\htmlparser\css\SelectorParser;
  */
 abstract class ContainerNode extends Node
 {
-	public $childNodes = array();
+	public $childNodes = [];
 	/*
 	 * Subset of childNodes which only has element nodes
 	 */
-	public $children = array();
+	public $children = [];
 	public $firstChild = null;
 
-	function __construct()
-	{
-	}
+	function __construct() {}
 
-	function appendChild($node)
+	function appendChild(Node $node)
 	{
 		$node->remove();
 		$node->parentNode = $this;
