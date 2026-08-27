@@ -6,42 +6,19 @@ require __DIR__ . '/../init.php';
 use gaswelder\htmlparser\dom\ElementNode;
 use \gaswelder\htmlparser\Parser;
 
-// Script path.
-array_shift($argv);
-
-define('USAGE', "usage: htmlcut [-i] <selector> <filepath> ...");
-$invert = false;
-$selector = '';
-
-while (count($argv) > 0 && $argv[0][0] == '-') {
-    if ($argv[0] == '-i') {
-        $invert = true;
-        array_shift($argv);
-    } else if ($argv[0] == "-h") {
-        printf(USAGE . "\n");
-        printf("\t-k\tinvert selection: keep matches, remove rest\n");
-        exit(0);
-    } else {
-        fprintf(STDERR, "unknown flag: $argv[0]\n");
-        exit(1);
-    }
-}
-
-$selector = array_shift($argv);
-if (!$selector) {
-    fprintf(STDERR, USAGE . "\n");
-    exit(1);
-}
-
 function forall(ElementNode $e, callable $f)
 {
     $f($e);
-    foreach ($e->children as $c) {
+    foreach ($e->children() as $c) {
         forall($c, $f);
     }
 }
 
-if ($invert) {
+/**
+ * Keep only what matches the selector.
+ */
+function crop(string $selector, array $argv)
+{
     foreach ($argv as $arg) {
         try {
             $doc = Parser::parse(file_get_contents($arg));
@@ -56,7 +33,13 @@ if ($invert) {
         echo $arg, "\n";
         file_put_contents($arg, $n->innerHTML());
     }
-} else {
+}
+
+/**
+ * Delete everything that matches the selector.
+ */
+function cut(string $selector, array $argv)
+{
     foreach ($argv as $arg) {
         try {
             $doc = Parser::parse(file_get_contents($arg));
@@ -71,7 +54,7 @@ if ($invert) {
         foreach ($sels as $sel) {
             if ($sel[0] == '@') {
                 $k = substr($sel, 1);
-                foreach ($doc->children as $c) {
+                foreach ($doc->children() as $c) {
                     forall($c, function ($e) use ($k, &$n) {
                         if ($e->getAttribute($k) !== null) {
                             $e->removeAttribute($k);
@@ -93,4 +76,37 @@ if ($invert) {
             file_put_contents($arg, $s);
         }
     }
+}
+
+array_shift($argv);
+define('USAGE', "arguments: [-i] <selector> <filepath> ...");
+
+$mode = null;
+$selector = '';
+
+while (count($argv) > 0 && $argv[0][0] == '-') {
+    if ($argv[0] == "-h") {
+        printf(USAGE . "\n");
+        printf("\t-i\tinvert selection: keep matches, remove rest\n");
+        exit(0);
+    }
+    if ($argv[0] == '-i') {
+        $mode = 'i';
+        array_shift($argv);
+        continue;
+    }
+    fprintf(STDERR, "unknown flag: $argv[0]\n");
+    exit(1);
+}
+
+$selector = array_shift($argv);
+if (!$selector) {
+    fprintf(STDERR, USAGE . "\n");
+    exit(1);
+}
+
+if ($mode == 'i') {
+    crop($selector, $argv);
+} else {
+    cut($selector, $argv);
 }
