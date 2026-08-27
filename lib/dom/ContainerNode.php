@@ -10,65 +10,19 @@ use gaswelder\htmlparser\css\SelectorParser;
  */
 abstract class ContainerNode extends Node
 {
-	public $childNodes = [];
-	/*
-	 * Subset of childNodes which only has element nodes
-	 */
-	public $children = [];
-	public $firstChild = null;
-
 	function __construct() {}
 
-	function appendChild(Node $node)
-	{
-		$node->remove();
-		$node->parentNode = $this;
-		$this->childNodes[] = $node;
-		if (!$this->firstChild) {
-			$this->firstChild = $node;
-		}
-		if ($node->nodeType == $node::ELEMENT_NODE) {
-			$this->children[] = $node;
-		}
-	}
-
-	/**
-	 * Inserts 'newNode' before the 'beforeNode' node which is a child of this node.
-	 * Returns the 'newNode'.
-	 *
-	 * @param Node $newNode
-	 * @param Node $beforeNode
-	 * @return Node
-	 */
-	function insertBefore($newNode, $beforeNode)
-	{
-		$pos = array_search($beforeNode, $this->childNodes, true);
-		if ($pos < 0) {
-			trigger_error("The 'before' not is not a child of the current node");
-			return;
-		}
-		$newNode->remove();
-		array_splice($this->childNodes, $pos, 0, [$newNode]);
-		$newNode->parentNode = $this;
-		return $newNode;
-	}
-
-	function lastChild()
-	{
-		$n = count($this->childNodes);
-		if ($n == 0) return null;
-		return $this->childNodes[$n - 1];
-	}
-
-	function getElementsByTagName($name)
+	function getElementsByTagName(string $name)
 	{
 		return $this->querySelectorAll($name);
 	}
 
-	function getElementById($id)
+	function getElementById(string $id)
 	{
 		foreach ($this->childNodes as $ch) {
-			if ($ch->nodeType != $ch::ELEMENT_NODE) continue;
+			if (!($ch instanceof ElementNode)) {
+				continue;
+			}
 			if ($ch->getAttribute('id') == $id) {
 				return $ch;
 			}

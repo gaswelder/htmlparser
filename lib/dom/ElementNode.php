@@ -28,7 +28,7 @@ class ElementNode extends ContainerNode
 	public $attributes = [];
 	public $classList = [];
 
-	function __construct($name)
+	function __construct(string $name)
 	{
 		parent::__construct();
 		$this->tagName = $name;

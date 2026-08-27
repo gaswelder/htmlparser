@@ -14,16 +14,67 @@ abstract class Node
 	const DOCUMENT_NODE = 9;
 
 	/**
-	 * Type of the node. One of the Node:: constants.
-	 *
-	 * @var int
+	 * One of the Node:: constants.
 	 */
-	public $nodeType;
+	public int $nodeType;
 
-	public $parentNode = null;
+	public Node|null $parentNode = null;
+
+	/** @var Node[] */
+	public array $childNodes = [];
 
 	/**
-	 * Removes this node from the parent node's children.
+	 * Subset of childNodes which only has element nodes.
+	 *
+	 * @var Node[]
+	 */
+	public array $children = [];
+
+	public Node|null $firstChild = null;
+
+	function appendChild(Node $node)
+	{
+		$node->remove();
+		$node->parentNode = $this;
+		$this->childNodes[] = $node;
+		if (!$this->firstChild) {
+			$this->firstChild = $node;
+		}
+		if ($node->nodeType == $node::ELEMENT_NODE) {
+			$this->children[] = $node;
+		}
+	}
+
+	/**
+	 * Inserts 'newNode' before the 'beforeNode' node which is a child of this node.
+	 * Returns the 'newNode'.
+	 *
+	 * @param Node $newNode
+	 * @param Node $beforeNode
+	 * @return Node
+	 */
+	function insertBefore($newNode, $beforeNode)
+	{
+		$pos = array_search($beforeNode, $this->childNodes, true);
+		if ($pos < 0) {
+			trigger_error("The 'before' not is not a child of the current node");
+			return;
+		}
+		$newNode->remove();
+		array_splice($this->childNodes, $pos, 0, [$newNode]);
+		$newNode->parentNode = $this;
+		return $newNode;
+	}
+
+	function lastChild()
+	{
+		$n = count($this->childNodes);
+		if ($n == 0) return null;
+		return $this->childNodes[$n - 1];
+	}
+
+	/**
+	 * Removes this node from its parent.
 	 */
 	function remove()
 	{
@@ -95,6 +146,6 @@ abstract class Node
 
 	function format()
 	{
-		trigger_error("format() not implemented for node type " . $this->nodeType);
+		return "";
 	}
 }
