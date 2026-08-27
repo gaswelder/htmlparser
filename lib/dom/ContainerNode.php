@@ -10,7 +10,9 @@ use gaswelder\htmlparser\css\SelectorParser;
  */
 abstract class ContainerNode extends Node
 {
-	function __construct() {}
+	// function __construct(int $type) {
+	// 	parent
+	// }
 
 	function getElementsByTagName(string $name)
 	{
@@ -19,7 +21,7 @@ abstract class ContainerNode extends Node
 
 	function getElementById(string $id)
 	{
-		foreach ($this->childNodes as $ch) {
+		foreach ($this->childNodes() as $ch) {
 			if (!($ch instanceof ElementNode)) {
 				continue;
 			}

@@ -24,15 +24,18 @@ class Attr
 
 class ElementNode extends ContainerNode
 {
-	public $tagName;
-	public $attributes = [];
-	public $classList = [];
+	private string $tagName;
+	private $attributes = [];
 
 	function __construct(string $name)
 	{
-		parent::__construct();
+		parent::__construct(self::ELEMENT_NODE);
 		$this->tagName = $name;
-		$this->nodeType = self::ELEMENT_NODE;
+	}
+
+	function tagName()
+	{
+		return $this->tagName;
 	}
 
 	function innerHTML()
@@ -41,7 +44,7 @@ class ElementNode extends ContainerNode
 			return '';
 		}
 		$s = '';
-		foreach ($this->childNodes as $node) {
+		foreach ($this->childNodes() as $node) {
 			$s .= $node->format();
 		}
 		return $s;
@@ -66,7 +69,7 @@ class ElementNode extends ContainerNode
 		// Format contents.
 		$inner = '';
 		$textOnly = true;
-		foreach ($this->childNodes as $node) {
+		foreach ($this->childNodes() as $node) {
 			if ($node instanceof ElementNode && !$node->_isInline()) {
 				$textOnly = false;
 			}
@@ -93,17 +96,22 @@ class ElementNode extends ContainerNode
 		return -1;
 	}
 
-	function setAttribute($k, $v)
+	function classList()
 	{
-		if ($k == 'class') {
-			$this->classList = preg_split('/[ ]+/', $v);
+		$v = $this->getAttribute("class");
+		if ($v !== null) {
+			return preg_split('/[ ]+/', $v);
 		}
+		return [];
+	}
+
+	function setAttribute(string $k, mixed $v)
+	{
 		$i = $this->findAttr($k);
-		if ($i < 0) {
-			$i = count($this->attributes);
-			$this->attributes[] = new Attr($k, $v);
-		} else {
+		if ($i >= 0) {
 			$this->attributes[$i]->value = $v;
+		} else {
+			$this->attributes[] = new Attr($k, $v);
 		}
 	}
 
@@ -207,7 +215,7 @@ class ElementNode extends ContainerNode
 		if ($id) {
 			$s .= "#$id";
 		}
-		foreach ($this->classList as $className) {
+		foreach ($this->classList() as $className) {
 			$s .= ".$className";
 		}
 		$s .= '>';

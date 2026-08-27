@@ -14,7 +14,7 @@ class SelectorsTest extends TestCase
 
         $bodies = $doc->getElementsByTagName('body');
         $this->assertEquals(1, $bodies->length);
-        $this->assertEquals('body', $bodies[0]->tagName);
+        $this->assertEquals('body', $bodies[0]->tagName());
     }
 
     function testQuerySelectorAll()

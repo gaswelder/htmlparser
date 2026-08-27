@@ -1,5 +1,6 @@
 <?php
 
+use gaswelder\htmlparser\dom\ElementNode;
 use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
@@ -16,10 +17,16 @@ class ParseTest extends TestCase
 	function testNested()
 	{
 		$doc = Parser::parse('<p><span>info</span></p>');
-		$p = $doc->firstChild;
-		$this->assertEquals('p', $p->tagName);
-		$span = $p->firstChild;
-		$this->assertEquals('span', $span->tagName);
+		$p = $doc->firstChild();
+		if (!($p instanceof ElementNode)) {
+			throw new Exception("expected element node");
+		}
+		$this->assertEquals('p', $p->tagName());
+		$span = $p->firstChild();
+		if (!($span instanceof ElementNode)) {
+			throw new Exception("expected element node");
+		}
+		$this->assertEquals('span', $span->tagName());
 	}
 
 	function testRawText()
@@ -31,7 +38,7 @@ class ParseTest extends TestCase
 		$doc = $p->parse($html);
 
 		$scripts = $doc->getElementsByTagName('script');
-		$this->assertEquals($raw, $scripts[0]->childNodes[0]->textContent);
+		$this->assertEquals($raw, $scripts[0]->childNodes()[0]->textContent());
 	}
 
 	function testAttrEntity()
@@ -39,8 +46,11 @@ class ParseTest extends TestCase
 		$html = '<abbr title="Eclog&aelig;">Ecl.</abbr>';
 		$p = new Parser();
 		$doc = $p->parse($html);
-
-		$this->assertEquals('Eclogæ', $doc->firstChild->getAttribute('title'));
+		$c = $doc->firstChild();
+		if (!($c instanceof ElementNode)) {
+			throw new Exception("expected element node");
+		}
+		$this->assertEquals('Eclogæ', $c->getAttribute('title'));
 	}
 
 	function testMeta()
@@ -91,9 +101,9 @@ class ParseTest extends TestCase
 					});</scripT><p>b</p>";
 		$doc = Parser::parse($html);
 		$tags = [];
-		foreach ($doc->childNodes as $cn) {
-			if ($cn->nodeType == 1) {
-				$tags[] = $cn->tagName;
+		foreach ($doc->childNodes() as $cn) {
+			if ($cn instanceof ElementNode) {
+				$tags[] = $cn->tagName();
 			}
 		}
 		$this->assertEquals(['p', 'SCRIpt', 'p'], $tags);

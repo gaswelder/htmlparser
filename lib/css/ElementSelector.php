@@ -22,12 +22,12 @@ class ElementSelector
 	public function match(ElementNode $child)
 	{
 		$v = $this->tag;
-		if ($v && strtolower($child->tagName) != strtolower($v)) {
+		if ($v && strtolower($child->tagName()) != strtolower($v)) {
 			return false;
 		}
 
 		$v = $this->class;
-		if ($v && !in_array($v, $child->classList)) {
+		if ($v && !in_array($v, $child->classList())) {
 			return false;
 		}
 
@@ -46,7 +46,7 @@ class ElementSelector
 		foreach ($this->pseudoclasses as $c) {
 			switch ($c) {
 				case "empty":
-					if (count($child->childNodes) > 0) {
+					if (count($child->childNodes()) > 0) {
 						return false;
 					}
 					break;

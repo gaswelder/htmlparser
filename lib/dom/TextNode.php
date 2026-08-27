@@ -4,12 +4,17 @@ namespace gaswelder\htmlparser\dom;
 
 class TextNode extends Node
 {
-	public $textContent;
+	private string $textContent;
 
-	function __construct($text)
+	function __construct(string $text)
 	{
+		parent::__construct(self::TEXT_NODE);
 		$this->textContent = $text;
-		$this->nodeType = self::TEXT_NODE;
+	}
+
+	function textContent()
+	{
+		return $this->textContent;
 	}
 
 	function __toString()

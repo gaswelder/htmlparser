@@ -16,33 +16,52 @@ abstract class Node
 	/**
 	 * One of the Node:: constants.
 	 */
-	public int $nodeType;
+	private int $nodeType;
 
-	public Node|null $parentNode = null;
+	private Node|null $parentNode = null;
 
 	/** @var Node[] */
-	public array $childNodes = [];
+	private array $childNodes = [];
 
-	/**
-	 * Subset of childNodes which only has element nodes.
-	 *
-	 * @var Node[]
-	 */
-	public array $children = [];
+	function __construct(int $type)
+	{
+		$this->nodeType = $type;
+	}
 
-	public Node|null $firstChild = null;
+	function nodeType()
+	{
+		return $this->nodeType;
+	}
+
+	function childNodes()
+	{
+		return $this->childNodes;
+	}
+
+	function firstChild()
+	{
+		if (count($this->childNodes()) == 0) {
+			return null;
+		}
+		return $this->childNodes[0];
+	}
+
+	function children()
+	{
+		$r = [];
+		foreach ($this->childNodes as $c) {
+			if ($c instanceof ElementNode) {
+				$r[] = $c;
+			}
+		}
+		return $r;
+	}
 
 	function appendChild(Node $node)
 	{
 		$node->remove();
 		$node->parentNode = $this;
 		$this->childNodes[] = $node;
-		if (!$this->firstChild) {
-			$this->firstChild = $node;
-		}
-		if ($node->nodeType == $node::ELEMENT_NODE) {
-			$this->children[] = $node;
-		}
 	}
 
 	/**
@@ -78,31 +97,13 @@ abstract class Node
 	 */
 	function remove()
 	{
-		if (!$this->parentNode) return;
-
 		$p = $this->parentNode;
-
+		if (!$p) {
+			return;
+		}
 		$pos = array_search($this, $p->childNodes, true);
-		/*
-		 * This element must be in the parent's childNodes
-		 * list, but not necessarily in the children list.
-		 */
 		assert($pos !== false);
 		array_splice($p->childNodes, $pos, 1);
-
-		$pos = array_search($this, $p->children, true);
-		if ($pos !== false) {
-			array_splice($p->children, $pos, 1);
-		}
-
-		if ($p->firstChild === $this) {
-			if (!empty($p->childNodes)) {
-				$p->firstChild = $p->childNodes[0];
-			} else {
-				$p->firstChild = null;
-			}
-		}
-
 		$this->parentNode = null;
 	}
 

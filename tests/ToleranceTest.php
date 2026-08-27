@@ -1,5 +1,7 @@
 <?php
 
+use gaswelder\htmlparser\dom\ElementNode;
+use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
@@ -23,7 +25,10 @@ class ToleranceTest extends TestCase
         $html = '<img data-image-caption="<p>your wp plugin has a bug</p>
         " />';
         $doc = Parser::parse($html);
-        $img = $doc->firstChild;
+        $img = $doc->firstChild();
+        if (!($img instanceof ElementNode)) {
+            throw new Exception("element node expected");
+        }
         $this->assertEquals(trim($img->getAttribute('data-image-caption')), '<p>your wp plugin has a bug</p>');
     }
 
@@ -105,9 +110,12 @@ class ToleranceTest extends TestCase
     {
         $doc = Parser::parse('<div>< just a bracket</div>');
         $text = '';
-        $ch = $doc->querySelector('div')->firstChild;
+        $ch = $doc->querySelector('div')->firstChild();
         while ($ch) {
-            $text .= $ch->textContent;
+            if (!($ch instanceof TextNode)) {
+                throw new Exception("text node expected");
+            }
+            $text .= $ch->textContent();
             $ch = $ch->nextSibling();
         }
         $this->assertEquals('< just a bracket', $text);

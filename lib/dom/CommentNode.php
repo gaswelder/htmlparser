@@ -6,7 +6,7 @@ class CommentNode extends Node
 {
 	function __construct($text)
 	{
-		$this->nodeType = self::COMMENT_NODE;
+		parent::__construct(self::COMMENT_NODE);
 	}
 
 	function format()

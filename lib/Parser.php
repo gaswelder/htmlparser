@@ -27,11 +27,13 @@ class Parser
 		}
 
 		$tokens = new tokstream($htmlSource);
-		$doc = new DocumentNode();
 
 		// Read doctype if it's there.
 		if ($tokens->more() && $tokens->peek()->type == 'doctype') {
-			$doc->type = $tokens->get()->content;
+			$type = $tokens->get()->content;
+			$doc = new DocumentNode($type);
+		} else {
+			$doc = new DocumentNode("");
 		}
 
 		// Discard invalid nodes at the top level.
@@ -100,11 +102,11 @@ class Parser
 
 			if ($parent instanceof ElementNode) {
 				// Normal closing tag as expected.
-				if (strtolower($parent->tagName) == $tagNameLC) {
+				if (strtolower($parent->tagName()) == $tagNameLC) {
 					return null;
 				}
 				// Auto-close 'p'
-				if (strtolower($parent->tagName) == 'p') {
+				if (strtolower($parent->tagName()) == 'p') {
 					$tokens->unget($token);
 					return null;
 				}
@@ -115,7 +117,7 @@ class Parser
 			// ancestor and therefore the current container also.
 			$hasAncestor = false;
 			foreach ($ancestors as $p) {
-				if ($p instanceof ElementNode && strtolower($p->tagName) == $tagNameLC) {
+				if ($p instanceof ElementNode && strtolower($p->tagName()) == $tagNameLC) {
 					$hasAncestor = true;
 					break;
 				}
@@ -141,7 +143,7 @@ class Parser
 
 		// Autoclose <p> tags.
 		if ($parent instanceof ElementNode) {
-			if (strtolower($parent->tagName) == 'p' && $node->_isBlock()) {
+			if (strtolower($parent->tagName()) == 'p' && $node->_isBlock()) {
 				$tokens->unget($token);
 				return null;
 			}

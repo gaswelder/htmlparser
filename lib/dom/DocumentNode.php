@@ -7,20 +7,19 @@ namespace gaswelder\htmlparser\dom;
  */
 class DocumentNode extends ContainerNode
 {
-	public $type;
+	private string $doctype;
 
-	function __construct($type = 'html')
+	function __construct($doctype)
 	{
-		parent::__construct();
-		$this->type = $type;
-		$this->nodeType = Node::DOCUMENT_NODE;
+		parent::__construct(Node::DOCUMENT_NODE);
+		$this->doctype = $doctype;
 	}
 
 	function format()
 	{
 		$s = '';
 		$prevBlock = false;
-		foreach ($this->childNodes as $node) {
+		foreach ($this->childNodes() as $node) {
 			if ($s == '' && $node instanceof TextNode) {
 				continue;
 			}

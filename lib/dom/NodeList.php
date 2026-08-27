@@ -11,7 +11,7 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 	private $items = [];
 	private $cursor = 0;
 
-	function __construct($items)
+	function __construct(array $items)
 	{
 		$this->items = $items;
 		$this->length = count($items);
@@ -26,7 +26,7 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 		return 'NodeList [ ' . implode(', ', $nodes) . ' ]';
 	}
 
-	function item($i)
+	function item(int $i): Node|null
 	{
 		if (!isset($this->items[$i])) {
 			return null;

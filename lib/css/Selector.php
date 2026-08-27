@@ -67,7 +67,7 @@ function filter(array $nodes, array $sequence): array
 	return filter($newStage, $rest);
 }
 
-function search(ContainerNode $node, $combinator, $spec): array
+function search(ContainerNode $node, string $combinator, $spec): array
 {
 	$matches = [];
 	if ($combinator == Selector::ADJACENT_SIBLING) {
@@ -76,13 +76,13 @@ function search(ContainerNode $node, $combinator, $spec): array
 			$matches[] = $next;
 		}
 	} else if ($combinator == Selector::CHILD) {
-		foreach ($node->children as $child) {
+		foreach ($node->children() as $child) {
 			if ($spec->match($child)) {
 				$matches[] = $child;
 			}
 		}
 	} else if ($combinator == Selector::DESCENDANT) {
-		foreach ($node->children as $child) {
+		foreach ($node->children() as $child) {
 			if ($spec->match($child)) {
 				$matches[] = $child;
 			}

@@ -18,7 +18,7 @@ class DOMTest extends TestCase
 
 		$nextElement = $b->nextElementSibling();
 		$this->assertInstanceOf(ElementNode::class, $nextElement);
-		$this->assertEquals('i', $nextElement->tagName);
+		$this->assertEquals('i', $nextElement->tagName());
 	}
 
 	function testEscapedAttributeValues()
@@ -31,7 +31,11 @@ class DOMTest extends TestCase
 	function testEscapedText()
 	{
 		$doc = Parser::parse('<body>isn&#039;t</body>');
-		$val = $doc->firstChild->firstChild->textContent;
+		$text = $doc->firstChild()->firstChild();
+		if (!($text instanceof TextNode)) {
+			throw new Exception("expected a text node");
+		}
+		$val = $text->textContent();
 		$this->assertEquals($val, "isn't");
 	}
 
