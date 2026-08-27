@@ -7,7 +7,7 @@ namespace gaswelder\htmlparser\dom;
  */
 class NodeList implements \ArrayAccess, \Iterator, \Countable
 {
-	public $length;
+	public int $length;
 	private $items = [];
 	private $cursor = 0;
 
@@ -26,12 +26,22 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 		return 'NodeList [ ' . implode(', ', $nodes) . ' ]';
 	}
 
-	function item(int $i): Node|null
+	function item(int $i): ElementNode|null
 	{
 		if (!isset($this->items[$i])) {
 			return null;
 		}
 		return $this->items[$i];
+	}
+
+	function offsetGet($i): ElementNode|null
+	{
+		return $this->item($i);
+	}
+
+	function current(): ElementNode|null
+	{
+		return $this->items[$this->cursor];
 	}
 
 	function count(): int
@@ -44,11 +54,6 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 		return isset($this->items[$i]);
 	}
 
-	function offsetGet($i): mixed
-	{
-		return $this->item($i);
-	}
-
 	function offsetSet($i, $v): void
 	{
 		trigger_error("Can't mess with collections");
@@ -57,11 +62,6 @@ class NodeList implements \ArrayAccess, \Iterator, \Countable
 	function offsetUnset($i): void
 	{
 		trigger_error("Can't mess with collections");
-	}
-
-	function current(): mixed
-	{
-		return $this->items[$this->cursor];
 	}
 
 	function key(): mixed

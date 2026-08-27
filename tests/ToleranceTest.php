@@ -17,6 +17,9 @@ class ToleranceTest extends TestCase
         $p = new Parser();
         $doc = $p->parse($raw);
         $img = $doc->getElementsByTagName('img')[0];
+        if (!($img instanceof ElementNode)) {
+            throw new Exception("element node expected");
+        }
         $this->assertEquals($img->getAttribute('alt'), 'I dont know how to ');
     }
 

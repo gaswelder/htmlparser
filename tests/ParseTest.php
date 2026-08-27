@@ -1,6 +1,7 @@
 <?php
 
 use gaswelder\htmlparser\dom\ElementNode;
+use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
@@ -38,7 +39,11 @@ class ParseTest extends TestCase
 		$doc = $p->parse($html);
 
 		$scripts = $doc->getElementsByTagName('script');
-		$this->assertEquals($raw, $scripts[0]->childNodes()[0]->textContent());
+		$s = $scripts[0]->childNodes()[0];
+		if (!($s instanceof TextNode)) {
+			throw new Exception("text node expected");
+		}
+		$this->assertEquals($raw, $s->textContent());
 	}
 
 	function testAttrEntity()

@@ -22,11 +22,8 @@ class SelectorsGroup
 
 	/**
 	 * Scans the given tree and returns matches.
-	 *
-	 * @param ContainerNode $tree
-	 * @return NodeList
 	 */
-	function select(ContainerNode $tree)
+	function select(ContainerNode $tree): NodeList
 	{
 		$results = [];
 		foreach ($this->selectors as $selector) {

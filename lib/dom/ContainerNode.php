@@ -10,10 +10,6 @@ use gaswelder\htmlparser\css\SelectorParser;
  */
 abstract class ContainerNode extends Node
 {
-	// function __construct(int $type) {
-	// 	parent
-	// }
-
 	function getElementsByTagName(string $name)
 	{
 		return $this->querySelectorAll($name);

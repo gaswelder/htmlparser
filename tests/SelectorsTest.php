@@ -1,5 +1,6 @@
 <?php
 
+use gaswelder\htmlparser\dom\ElementNode;
 use gaswelder\htmlparser\Parser;
 
 require __DIR__ . '/../init.php';
@@ -14,7 +15,11 @@ class SelectorsTest extends TestCase
 
         $bodies = $doc->getElementsByTagName('body');
         $this->assertEquals(1, $bodies->length);
-        $this->assertEquals('body', $bodies[0]->tagName());
+        $b = $bodies[0];
+        if (!($b instanceof ElementNode)) {
+            throw new Error("element node expected");
+        }
+        $this->assertEquals('body', $b->tagName());
     }
 
     function testQuerySelectorAll()
@@ -37,6 +42,9 @@ class SelectorsTest extends TestCase
         $posts = $doc->querySelectorAll('#posts .post');
         $ids = [];
         foreach ($posts as $node) {
+            if (!($node instanceof ElementNode)) {
+                throw new Error("element node expected");
+            }
             $ids[] = $node->getAttribute('id');
         }
 
@@ -95,6 +103,9 @@ class SelectorsTest extends TestCase
         ];
         $links = [];
         foreach ($doc->querySelectorAll($selector) as $node) {
+            if (!($node instanceof ElementNode)) {
+                throw new Error("element node expected");
+            }
             $links[] = $node->getAttribute('href');
         }
         $this->assertEquals($expect, $links);
@@ -117,8 +128,16 @@ class SelectorsTest extends TestCase
         $doc = Parser::parse($html);
         $hh = $doc->querySelectorAll('p.mark + h1');
         $this->assertCount(2, $hh);
-        $this->assertEquals('One', $hh[0]->innerHTML());
-        $this->assertEquals('Two', $hh[1]->innerHTML());
+        $h1 = $hh[0];
+        $h2 = $hh[1];
+        if (!($h1 instanceof ElementNode)) {
+            throw new Exception("element node expected");
+        }
+        if (!($h2 instanceof ElementNode)) {
+            throw new Exception("element node expected");
+        }
+        $this->assertEquals('One', $h1->innerHTML());
+        $this->assertEquals('Two', $h2->innerHTML());
     }
 
     function testEmpty()
@@ -127,6 +146,10 @@ class SelectorsTest extends TestCase
         $doc = Parser::parse($html);
         $pp = $doc->querySelectorAll('p:empty');
         $this->assertCount(1, $pp);
-        $this->assertEquals('c2', $pp[0]->getAttribute('class'));
+        $p = $pp[0];
+        if (!($p instanceof ElementNode)) {
+            throw new Exception("element node expected");
+        }
+        $this->assertEquals('c2', $p->getAttribute('class'));
     }
 }
