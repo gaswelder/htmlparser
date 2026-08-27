@@ -78,6 +78,36 @@ function cut(string $selector, array $argv)
     }
 }
 
+/**
+ * Strip tags that match the selector but keep the contents.
+ */
+function strip(string $selector, array $argv)
+{
+    foreach ($argv as $arg) {
+        try {
+            $doc = Parser::parse(file_get_contents($arg));
+        } catch (Exception $e) {
+            echo "$arg: " . $e->getMessage();
+            continue;
+        }
+        $matched = false;
+        foreach ($doc->querySelectorAll($selector) as $e) {
+            $matched = true;
+            $p = $e->parentNode();
+            foreach ($e->childNodes() as $child) {
+                $p->insertBefore($child, $e);
+            }
+            $e->remove();
+        }
+        if ($matched) {
+            echo $arg, "\n";
+            $s = $doc->format();
+            file_put_contents($arg, $s);
+        }
+    }
+}
+
+
 array_shift($argv);
 define('USAGE', "arguments: [-i] <selector> <filepath> ...");
 
@@ -91,7 +121,20 @@ while (count($argv) > 0 && $argv[0][0] == '-') {
         exit(0);
     }
     if ($argv[0] == '-i') {
+        if ($mode != null) {
+            fprintf(STDERR, "either -i or -s or nothing\n");
+            exit(1);
+        }
         $mode = 'i';
+        array_shift($argv);
+        continue;
+    }
+    if ($argv[0] == '-s') {
+        if ($mode != null) {
+            fprintf(STDERR, "either -i or -s or nothing\n");
+            exit(1);
+        }
+        $mode = 's';
         array_shift($argv);
         continue;
     }
@@ -107,6 +150,8 @@ if (!$selector) {
 
 if ($mode == 'i') {
     crop($selector, $argv);
+} else if ($mode == 's') {
+    strip($selector, $argv);
 } else {
     cut($selector, $argv);
 }

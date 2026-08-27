@@ -38,6 +38,11 @@ abstract class Node
 		return $this->childNodes;
 	}
 
+	function parentNode()
+	{
+		return $this->parentNode;
+	}
+
 	function firstChild()
 	{
 		if (count($this->childNodes()) == 0) {
