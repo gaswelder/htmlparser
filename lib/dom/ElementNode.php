@@ -4,27 +4,21 @@ namespace gaswelder\htmlparser\dom;
 
 class Attr
 {
-	public $name;
-	public $value;
+	public string $name;
+	public mixed $value;
 
-	function __construct($k, $v)
+	function __construct(string $k, mixed $v)
 	{
 		$this->name = $k;
 		$this->value = $v;
-	}
-
-	function format()
-	{
-		if ($this->value === true) {
-			return $this->name;
-		}
-		return sprintf('%s="%s"', $this->name, htmlspecialchars($this->value));
 	}
 }
 
 class ElementNode extends ContainerNode
 {
 	private string $tagName;
+
+	/** @var Attr[] */
 	private $attributes = [];
 
 	function __construct(string $name)
@@ -40,50 +34,11 @@ class ElementNode extends ContainerNode
 
 	function innerHTML()
 	{
-		if ($this->_isVoid()) {
-			return '';
+		$s = [];
+		foreach ($this->childNodes() as $c) {
+			$s[] = format($c);
 		}
-		$s = '';
-		foreach ($this->childNodes() as $node) {
-			$s .= $node->format();
-		}
-		return $s;
-	}
-
-	function format()
-	{
-		// Format open tag.
-		$open = '<' . $this->tagName;
-		foreach ($this->attributes as $attr) {
-			$open .= ' ' . $attr->format();
-		}
-		if ($this->_isVoid()) {
-			$open .= '>';
-			return $open;
-		}
-		$open .= '>';
-
-		// Format closing tag.
-		$close = '</' . $this->tagName . '>';
-
-		// Format contents.
-		$inner = '';
-		$textOnly = true;
-		foreach ($this->childNodes() as $node) {
-			if ($node instanceof ElementNode && !$node->_isInline()) {
-				$textOnly = false;
-			}
-			$inner .= trim($node->format()) . "\n";
-		}
-		$inner = trim($inner);
-		if ($textOnly) {
-			$inner = reflow(trim($inner));
-			return $open . $inner . $close;
-		}
-		if ($inner == '') {
-			return $open . $close;
-		}
-		return $open . "\n" . Util::indent($inner) . "\n" . $close;
+		return implode('', $s);
 	}
 
 	private function findAttr(string $name)
@@ -104,6 +59,15 @@ class ElementNode extends ContainerNode
 			return preg_split('/[ ]+/', $v);
 		}
 		return [];
+	}
+
+	function attributes()
+	{
+		$r = [];
+		foreach ($this->attributes as $a) {
+			$r[$a->name] = $a->value;
+		}
+		return $r;
 	}
 
 	function setAttribute(string $k, mixed $v)
@@ -133,82 +97,6 @@ class ElementNode extends ContainerNode
 		}
 	}
 
-	private static $voidElements = [
-		'area',
-		'base',
-		'br',
-		'col',
-		'embed',
-		'hr',
-		'img',
-		'input',
-		'keygen',
-		'link',
-		'menuitem',
-		'meta',
-		'param',
-		'source',
-		'track',
-		'wbr',
-	];
-
-	/**
-	 * Returns true if this element is a "void" element like <br> or <img>.
-	 *
-	 * @return bool
-	 */
-	function _isVoid()
-	{
-		return in_array(strtolower($this->tagName), self::$voidElements);
-	}
-
-	private static $blockElements = [
-		'address',
-		'article',
-		'aside',
-		'blockquote',
-		'details',
-		'dialog',
-		'dd',
-		'div',
-		'dl',
-		'dt',
-		'fieldset',
-		'figcaption',
-		'figure',
-		'footer',
-		'form',
-		'h1',
-		'h2',
-		'h3',
-		'h4',
-		'h5',
-		'h6',
-		'header',
-		'hgroup',
-		'hr',
-		'li',
-		'main',
-		'nav',
-		'ol',
-		'p',
-		'pre',
-		'section',
-		'table',
-		'ul',
-	];
-
-	function _isBlock()
-	{
-		return in_array(strtolower($this->tagName), self::$blockElements);
-	}
-
-	function _isInline()
-	{
-		$inline = ['a', 'b', 'strong', 'em', 'i'];
-		return in_array(strtolower($this->tagName), $inline);
-	}
-
 	function __toString()
 	{
 		$s = '<' . $this->tagName;
@@ -222,15 +110,4 @@ class ElementNode extends ContainerNode
 		$s .= '>';
 		return $s;
 	}
-}
-
-function reflow(string $text)
-{
-	$words = preg_split('/\s+/', $text);
-	$chunks = array_chunk($words, 8);
-	$lines = [];
-	foreach ($chunks as $chunk) {
-		$lines[] = implode(' ', $chunk);
-	}
-	return implode("\n", $lines);
 }

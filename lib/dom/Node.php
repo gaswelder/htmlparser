@@ -149,9 +149,4 @@ abstract class Node
 	{
 		return "#node(type=$this->nodeType)";
 	}
-
-	function format()
-	{
-		return "";
-	}
 }

@@ -4,6 +4,8 @@ use gaswelder\htmlparser\dom\ElementNode;
 use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\Parser;
 
+use function gaswelder\htmlparser\dom\format;
+
 require __DIR__ . '/../init.php';
 
 class DOMTest extends TestCase
@@ -45,7 +47,7 @@ class DOMTest extends TestCase
 		$img = $doc->querySelector('img');
 		$img->removeAttribute('srcset');
 		$img->removeAttribute('sizes');
-		$this->assertEquals(trim($doc->format()), '<img src="one">');
+		$this->assertEquals(format($doc), '<img src="one">');
 	}
 
 	function testGetAttribute()

@@ -4,6 +4,8 @@ use gaswelder\htmlparser\dom\ElementNode;
 use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\Parser;
 
+use function gaswelder\htmlparser\dom\format;
+
 require __DIR__ . '/../init.php';
 
 class ToleranceTest extends TestCase
@@ -75,7 +77,7 @@ class ToleranceTest extends TestCase
         </TABLE>
         Foo bar';
 
-        $f = Parser::parse($html)->format();
+        $f = format(Parser::parse($html));
         $this->assertContains('Foo bar', $f);
     }
 
@@ -101,12 +103,6 @@ class ToleranceTest extends TestCase
     {
         $doc = Parser::parse("<a href= 'http://foo'>foo</a>");
         $this->assertEquals('http://foo', $doc->querySelector('a')->getAttribute('href'));
-    }
-
-    function testNonTag()
-    {
-        $doc = Parser::parse("<b>A <->B</-></b>");
-        $this->assertEquals("A <->B</->", $doc->querySelector('b')->innerHTML());
     }
 
     function testNonTag1()

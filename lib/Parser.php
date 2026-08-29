@@ -7,6 +7,7 @@ use gaswelder\htmlparser\dom\CommentNode;
 use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\dom\ContainerNode;
 use gaswelder\htmlparser\dom\ElementNode;
+use gaswelder\htmlparser\dom\Spec;
 
 const UTF8_BOM = "\xEF\xBB\xBF";
 
@@ -14,12 +15,8 @@ class Parser
 {
 	/**
 	 * Parses the given HTML source.
-	 *
-	 * @param string $htmlSource
-	 * @return DocumentNode
-	 * @throws ParsingException
 	 */
-	static function parse($htmlSource)
+	static function parse(string $htmlSource)
 	{
 		// Skip UTF-8 marker if it's present
 		if (substr($htmlSource, 0, 3) == UTF8_BOM) {
@@ -137,13 +134,13 @@ class Parser
 		foreach ($attrs as $k => $v) {
 			$node->setAttribute($k, $v);
 		}
-		if ($node->_isVoid()) {
+		if (Spec::isVoid($node)) {
 			return $node;
 		}
 
 		// Autoclose <p> tags.
 		if ($parent instanceof ElementNode) {
-			if (strtolower($parent->tagName()) == 'p' && $node->_isBlock()) {
+			if (strtolower($parent->tagName()) == 'p' && Spec::isBlock($node)) {
 				$tokens->unget($token);
 				return null;
 			}

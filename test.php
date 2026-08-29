@@ -4,7 +4,7 @@ class AssertException extends Exception {}
 
 class TestCase
 {
-	function assertEquals($actual, $expected)
+	function assertEquals(mixed $expected, mixed $actual)
 	{
 		if ($actual !== $expected) {
 			echo "expected: \"$expected\"\n";
@@ -69,7 +69,7 @@ function matches($name, $patterns)
 	return false;
 }
 
-function runFile($path, $testPatterns)
+function runFile(string $path, $testPatterns)
 {
 	$fails = 0;
 	$ok = 0;
@@ -93,7 +93,7 @@ function runFile($path, $testPatterns)
 				echo "OK $name\n";
 				$ok++;
 			} catch (AssertException $e) {
-				echo "FAIL $name\n";
+				echo "FAIL $name: $path\n";
 				$fails++;
 			}
 		}

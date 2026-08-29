@@ -8,9 +8,4 @@ class CommentNode extends Node
 	{
 		parent::__construct(self::COMMENT_NODE);
 	}
-
-	function format()
-	{
-		return '';
-	}
 }

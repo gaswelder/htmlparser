@@ -9,30 +9,15 @@ class DocumentNode extends ContainerNode
 {
 	private string $doctype;
 
-	function __construct($doctype)
+	function __construct(string $doctype)
 	{
 		parent::__construct(Node::DOCUMENT_NODE);
 		$this->doctype = $doctype;
 	}
 
-	function format()
+	function doctype()
 	{
-		$s = '';
-		$prevBlock = false;
-		foreach ($this->childNodes() as $node) {
-			if ($s == '' && $node instanceof TextNode) {
-				continue;
-			}
-			$isBlock = $node instanceof ElementNode && $node->_isBlock();
-			if ($isBlock && $prevBlock) {
-				$s .= "\n\n";
-			}
-			$s .= $node->format();
-			$prevBlock = $isBlock;
-		}
-		// $s = preg_replace('/[ \t]+\n/', "\n", $s);
-		// $s = preg_replace('/\n{3,}/', "\n\n", $s);
-		return $s;
+		return $this->doctype;
 	}
 
 	/**

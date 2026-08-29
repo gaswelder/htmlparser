@@ -4,6 +4,8 @@ use gaswelder\htmlparser\dom\ElementNode;
 use gaswelder\htmlparser\dom\TextNode;
 use gaswelder\htmlparser\Parser;
 
+use function gaswelder\htmlparser\dom\format;
+
 require __DIR__ . '/../init.php';
 
 class ParseTest extends TestCase
@@ -61,7 +63,7 @@ class ParseTest extends TestCase
 	function testMeta()
 	{
 		$html = '<head><META name="foo" content="bar"><meta name="foo" content="bar"></head>';
-		$f = Parser::parse($html)->format();
+		$f = format(Parser::parse($html));
 		$this->assertNotContains('</meta>', $f);
 		$this->assertNotContains('</META>', $f);
 	}
@@ -75,7 +77,7 @@ class ParseTest extends TestCase
 	  </p>
 	  three';
 
-		$f = Parser::parse($html)->format();
+		$f = format(Parser::parse($html));
 		$this->assertContains('one', $f);
 		$this->assertContains('two', $f);
 		$this->assertContains('three', $f);
@@ -84,14 +86,15 @@ class ParseTest extends TestCase
 	function testAutoclosing()
 	{
 		$table = [
-			['<p>a<p>b', "<p>a</p>\n\n<p>b</p>"],
-			['<p>a<div>b</div>', "<p>a</p>\n\n<div>b</div>"],
-			['<td><p>hoho</td>', "<td>\n<p>hoho</p>\n</td>"]
+			['<p>a<p>b', "<p>a</p><p>b</p>"],
+			['<p>a<div>b</div>', "<p>a</p><div>b</div>"],
+			['<td><p>hoho</td>', "<td><p>hoho</p></td>"]
 		];
 
 		foreach ($table as $case) {
 			[$html, $fmt] = $case;
-			$f = trim(Parser::parse($html)->format());
+			$f = format(Parser::parse($html));
+			$f = preg_replace('/\s/s', '', $f);
 			$this->assertEquals($f, $fmt);
 		}
 	}
