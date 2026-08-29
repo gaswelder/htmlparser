@@ -16,6 +16,7 @@ class FormatTest extends TestCase
 			"<div>\n  text\n</div>",
 			"<div>\n  <b>text</b>\n</div>",
 			"<div>\n  <p>text</p>\n</div>",
+			"<div></div>",
 		];
 		foreach ($cases as $html) {
 			$doc = Parser::parse($html);

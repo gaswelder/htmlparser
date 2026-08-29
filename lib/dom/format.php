@@ -50,7 +50,6 @@ function format(Node $n)
                 $s .= $close;
                 return $s;
             case "block":
-                $s .= "\n";
                 $lines = [];
                 foreach ($n->childNodes() as $c) {
                     $x = trim(format($c));
@@ -69,6 +68,7 @@ function format(Node $n)
                 if (count($lines) > 0 && $lines[count($lines) - 1] == '') {
                     array_pop($lines);
                 }
+                $s .= "\n";
                 $s .= implode("\n", $lines) . "\n";
                 $s .= $close;
                 return $s;
