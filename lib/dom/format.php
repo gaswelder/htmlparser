@@ -86,6 +86,9 @@ function format(Node $n)
         $t = str_replace(' ', '&nbsp;', $t);
         return $t;
     }
+    if ($n instanceof CommentNode) {
+        return "";
+    }
     throw new Exception("unhandled node: " . get_class($n));
 }
 
